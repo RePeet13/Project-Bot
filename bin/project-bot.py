@@ -1,38 +1,49 @@
-import os, sys, getopt
+import os, sys, argparse
 
-# Global Project defaults
+### Global Project defaults ###
 project_dir = "../"
 project_name = ''
 zeros=4
 
-def main(argv):
-    in_project_name = ''
-    in_dir_name = ''
+### Arg Parsing ###
 
-    """ Help Text """
-    help = 'project-bot.py -p "Project Name"'
+parser = argparse.ArgumentParser()
+parser.add_argument("name", help="Name of the project (and folder) to create")
+args = parser.parse_args()
+print args.name
 
-    try:
-        opts, args = getopt.getopt(argv, "hp:d:", ["project=","directory="])
-    except getopt.GetoptError:
-        print help
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print help
-            sys.exit()
-        elif opt in ("-p", "--project"):
-            in_project_name = arg
-            print(in_project_name)
-        elif opt in ("-d", "--directory"):
-            in_dir_name = arg
-            print(in_dir_name)
-    if in_project_name != '':
-        global project_name 
-        project_name = in_project_name
 
-if __name__ == "__main__":
-    main(sys.argv[1])
+
+
+
+# def main(argv):
+#     in_project_name = ''
+#     in_dir_name = ''
+
+#     """ Help Text """
+#     help = 'project-bot.py -p "Project Name"'
+
+#     try:
+#         opts, args = getopt.getopt(argv, "hp:d:", ["project=","directory="])
+#     except getopt.GetoptError:
+#         print help
+#         sys.exit(2)
+#     for opt, arg in opts:
+#         if opt == '-h':
+#             print help
+#             sys.exit()
+#         elif opt in ("-p", "--project"):
+#             in_project_name = arg
+#             print(in_project_name)
+#         elif opt in ("-d", "--directory"):
+#             in_dir_name = arg
+#             print(in_dir_name)
+#     if in_project_name != '':
+#         global project_name 
+#         project_name = in_project_name
+
+# if __name__ == "__main__":
+#     main(sys.argv[1])
     
    
 def create_project():
@@ -73,6 +84,13 @@ def getDefaultProjectDir():
             dirs.append(d)
     print("Default Project Dir: " + "/".join(dirs)+"/")
     return "/".join(dirs) + "/"
+    
+def genExampleFolder():
+    # This is where the example folder will be generated
+    
+    ### Set global options and what not
+    
+    create_project()
 
 """ Actual Execution """
-create_project()
+# create_project()

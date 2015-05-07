@@ -1,0 +1,23 @@
+{
+    "name"      : "Generic Template",
+    "slug"      : "gen",
+    "desc"      : "This is a basic template."
+    "author"    : { "name" : "Taylor Peet", "email" : "taylor@unrulyrecursion.com"},
+    "created"   : "2015/05/06",
+    "modified"  : "2015/05/06",
+    "version"   : 1,
+    
+    "structure" : {[
+        {
+            "type"  : "folder",
+            "name"  : "gallery",
+            "path"  : "/gallery"
+        },
+        {
+            "type"  : "file",
+            "name"  : "readme.md",
+            "path"  : "/readme.md",
+            "template" : "/files/readme.md"
+        }
+        ]}
+}
