@@ -1,0 +1,8 @@
+{
+    "author"    : { "name" : "Taylor Peet", "email" : "taylor@unrulyrecursion.com" },
+    "contributors"  : [
+            { "name" : "Devon Peet", "email" : "devon@unrulyrecursion.com", "rank" : 1 },
+            { "name" : "Christa Peet", "email" : "christa@unrulyrecursion.com", "rank" : 2 },
+            { "name" : "Sterling Peet", "email" : "sterling@unrulyrecursion.com", "rank" : 2 }
+        ]
+}
