@@ -1,9 +1,11 @@
-import os, sys, argparse
+import os, sys, argparse, json, sys
 
 ### Global Project defaults ###
 project_dir = "../"
 project_name = ''
+project_path = ''
 zeros=4
+template_dir = ""
 
 ### Arg Parsing ###
 
@@ -50,7 +52,7 @@ def create_project():
 
     global project_name
     if project_name == '':
-        project_name = input("Project name, sir: ")
+        project_name = raw_input("Project name, sir: ")
 
     project_dir = getDefaultProjectDir()
     print("Project Dir: " + str(os.listdir(project_dir)))
@@ -69,6 +71,7 @@ def create_project():
     
     new_path = project_dir + str(num).zfill(zeros) + "-" + project_name
     print("Making dir: " + new_path)
+    project_path = new_path
     os.mkdir(new_path)
     
 def getScriptPath():
@@ -91,6 +94,75 @@ def genExampleFolder():
     ### Set global options and what not
     
     create_project()
+    
+def parseTemplate(template_path):
+    try:
+        gen_file = open(template_path + 'generic.json', 'r')
+        gen = json.load(gen_file)
+        gen_file.close()
+    except IOError as e:
+        print "I/O error({0}): {1}".format(e.errno, e.strerror)
+        sys.exit()
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
+        raise
+        sys.exit()
+
+    # generic.json File loaded and parsed correctly
+    
+    try:
+        val_file = open(template_path + 'values.json', 'r')
+        val = json.load(gen_file)
+        val_file.close()
+    except IOError as e:
+        print "I/O error({0}): {1}".format(e.errno, e.strerror)
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
+        raise
+
+    # values.json File loaded and parsed correctly
+    
+    # can sort by folders on top?
+    for s in gen['structure']:
+        if s['type'] == "folder":
+            os.mkdir(project_dir + s['path'])
+        elif s['type'] == "file":
+            if s['name'] == 'readme.md':
+                generateReadme(template_path + s['template'])
+    
+
+def generateReadme(file_template_path):
+    
+    # Try to load src file
+    try:
+        src_file = open(file_template_path, 'r')
+    except IOError as e:
+        print "I/O error({0}): {1}".format(e.errno, e.strerror)
+        sys.exit()
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
+        sys.exit()
+        raise
+    # Src file loaded properly (at least we hope)
+    
+    
+    # Open destination file for writing!
+    try:
+        temp_file = open(project_path + 'readme.md', 'w')
+    except IOError as e:
+        print "I/O error({0}): {1}".format(e.errno, e.strerror)
+        sys.exit()
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
+        sys.exit()
+        raise
+    # Opened successfully
+    
+    # Now just to go through line by line and substitute variables in src
+    
+    temp_file.close()
+    src_file.close()
+
 
 """ Actual Execution """
 # create_project()
