@@ -160,6 +160,14 @@ def generateReadme(file_template_path):
     
     # Now just to go through line by line and substitute variables in src
     
+    for line in src_file:
+      
+      l=""
+      
+      #perform operation and substitution on line into l
+      
+      temp_file.write(l)# + "\n") # TODO uncomment if no new lines in output
+    
     temp_file.close()
     src_file.close()
 
