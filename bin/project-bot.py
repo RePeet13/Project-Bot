@@ -122,7 +122,6 @@ def parseTemplate(template_path):
 
     # values.json File loaded and parsed correctly
     
-    # can sort by folders on top?
     for s in gen['structure']:
         if s['type'] == "folder":
             os.mkdir(project_dir + s['path'])
@@ -180,10 +179,13 @@ def readmeSub(matchObj):
     if scope == "i":    # Input Value
         pass
     elif scope == "l":  # Local Values (generic.json)
+        return gen[matchObj[1:]]
         pass
-    elif scope == "v":  # Values.json 
+    elif scope == "v":  # Values.json
+        return val[matchObj[1:]]
         pass
     elif scope == "t":  # Template Values
+        return gen[matchObj[1:]]
         pass
     else:
         pass
