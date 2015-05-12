@@ -1,4 +1,4 @@
-import os, sys, argparse, json, sys
+import os, sys, argparse, json, sys, re
 
 ### Global Project defaults ###
 project_dir = "../"
@@ -160,17 +160,34 @@ def generateReadme(file_template_path):
     
     # Now just to go through line by line and substitute variables in src
     
+    pat = re.compile(r'<([a-z]+)>',re.I)
+    
     for line in src_file:
+        # substitute variable names for values
+        l = re.sub(pat,readmeSub,line)
       
-      l=""
+        #perform operation and substitution on line into l
       
-      #perform operation and substitution on line into l
-      
-      temp_file.write(l)# + "\n") # TODO uncomment if no new lines in output
+        temp_file.write(l)# + "\n") # TODO uncomment if no new lines in output
     
     temp_file.close()
     src_file.close()
 
+def readmeSub(matchObj):
+    scope = matchObj[0]
+    
+    # Gigantic Else If statement
+    if scope == "i":    # Input Value
+        pass
+    elif scope == "l":  # Local Values (generic.json)
+        pass
+    elif scope == "v":  # Values.json 
+        pass
+    elif scope == "t":  # Template Values
+        pass
+    else:
+        pass
+        # something's wrong, need to error out gracefully
 
 """ Actual Execution """
 # create_project()
