@@ -9,7 +9,7 @@ Go ahead and add a description here, but keep it short and to the point (~125 ch
 
 ## Author / Contributors ##
 [include author and contributors here]
-**<vAuthorName>** <vAuthorEmail>
+**<vAuthor-Name>** <vAuthor-Email>
 
 ## Information ##
 

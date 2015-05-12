@@ -2,8 +2,6 @@ import os, sys, argparse, json, sys, re
 
 ### Global Project defaults ###
 project_dir = "../"
-project_name = ''
-project_path = ''
 zeros=4
 template_dir = ""
 
@@ -51,6 +49,9 @@ print args.name
 def create_project():
 
     global project_name
+    global project_dir
+    global project_path
+    
     if project_name == '':
         project_name = raw_input("Project name, sir: ")
 
@@ -74,10 +75,10 @@ def create_project():
     project_path = new_path
     os.mkdir(new_path)
     
-def getScriptPath():
+def getScriptPath ():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
 
-def getDefaultProjectDir():
+def getDefaultProjectDir ():
     dirs_tmp = getScriptPath().split("/")
     dirs = []
     for d in dirs_tmp:
@@ -88,14 +89,18 @@ def getDefaultProjectDir():
     print("Default Project Dir: " + "/".join(dirs)+"/")
     return "/".join(dirs) + "/"
     
-def genExampleFolder():
+def genExampleFolder ():
     # This is where the example folder will be generated
     
     ### Set global options and what not
     
     create_project()
     
-def parseTemplate(template_path):
+def parseTemplate (template_path):
+    
+    global gen
+    global val
+    
     try:
         gen_file = open(template_path + 'generic.json', 'r')
         gen = json.load(gen_file)
@@ -180,13 +185,17 @@ def readmeSub(matchObj):
         pass
     elif scope == "l":  # Local Values (generic.json)
         return gen[matchObj[1:]]
-        pass
     elif scope == "v":  # Values.json
-        return val[matchObj[1:]]
-        pass
+        out = ""
+        arr = matchObj[1:].split("-")
+        if len(arr) > 1:
+            # TODO handle
+            print("length of array more than 2: " + str(arr))
+            sys.exit()
+        out = out + val[arr[0][1:]][arr[1]]
+        return out
     elif scope == "t":  # Template Values
         return gen[matchObj[1:]]
-        pass
     else:
         pass
         # something's wrong, need to error out gracefully
