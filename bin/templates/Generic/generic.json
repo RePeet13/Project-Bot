@@ -20,6 +20,10 @@
             "name"  : "readme.md",
             "path"  : "/readme.md",
             "template" : "/files/readme.md"
+        },
+        {   "type"  : "folder",
+            "name"  : "scm",
+            "path"  : "/scm"
         }
         ]
 }
