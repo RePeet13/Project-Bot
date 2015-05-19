@@ -5,12 +5,15 @@ project_dir = "../"
 zeros=4
 template_dir = ""
 
-### Arg Parsing ###
 
-parser = argparse.ArgumentParser()
-parser.add_argument("name", help="Name of the project (and folder) to create")
-args = parser.parse_args()
-print args.name
+if __name__ == "__main__":
+    
+    ### Arg Parsing ###
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('name', help="Name of the project (and folder) to create", type=String)
+    args = parser.parse_args()
+    print args.name
 
 
 
@@ -42,8 +45,7 @@ print args.name
 #         global project_name 
 #         project_name = in_project_name
 
-# if __name__ == "__main__":
-#     main(sys.argv[1])
+
     
    
 def create_project():
