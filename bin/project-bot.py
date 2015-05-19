@@ -76,7 +76,8 @@ def create_project():
     os.mkdir(new_path)
     
 def getScriptPath ():
-    return os.path.dirname(os.path.realpath(sys.argv[0]))
+    return os.path.dirname(os.path.realpath(__file__))
+    # return os.path.dirname(os.path.realpath(sys.argv[0])) # previous solution
 
 def getDefaultProjectDir ():
     dirs_tmp = getScriptPath().split("/")
