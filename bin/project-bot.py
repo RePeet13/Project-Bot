@@ -11,7 +11,8 @@ if __name__ == "__main__":
     ### Arg Parsing ###
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('name', help="Name of the project (and folder) to create", type=String)
+    parser.add_argument('name', help='Name of the project (and folder) to create')
+    parser.add_argument('-t', '--template', dest='template', help="Template name (also used as the name of the template's enclosing folder)")
     args = parser.parse_args()
     print args.name
 
