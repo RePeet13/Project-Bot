@@ -1,6 +1,7 @@
 {
     "name"      : "Generic Template",
-    "slug"      : "gen",
+    "prefix"    : "gn",
+    "slug"      : "generic",
     "description"   : "This is a basic template."
     "created"   : "2015/05/06",
     "modified"  : "2015/05/06",
