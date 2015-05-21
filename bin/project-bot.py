@@ -23,7 +23,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--scm', dest='scm', help='Which source control management you would like initialized', choices=['git'])
     parser.add_argument('-c', '--contributor', dest='contributor', help='A contributor to the project', nargs=3, action='append', metavar=('cName', 'cEmail', 'cRank'))
     parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
-    parser.add_argument('-d', '--directory', dest='dir', help='Custom directory location for new project')
+    parser.add_argument('-d', '--directory', dest='directory', help='Custom directory location for new project')
     args = parser.parse_args()
 
 
@@ -108,8 +108,12 @@ def genExampleFolder():
     # This is where the example folder will be generated
     
     ### Set global options and what not
-    
-    args.
+    # est='template', dest='scm', dest='contributor', dest='info', dest='directory'
+    args.template = 'Generic'
+    args.scm = 'git'
+    args.contributor = []
+    args.info = ''
+    args.directory = ''
     
     ### Call normal create_project ###
     
