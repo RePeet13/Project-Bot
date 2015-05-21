@@ -8,15 +8,22 @@ template_dir = ""
 
 if __name__ == "__main__":
     
-    ### Arg Parsing ###
     global args
+    
+    ### Generate Example Project/Folder ###
+    
+    genExampleFolder()
+    
+    
+    ### Arg Parsing ###
     
     parser = argparse.ArgumentParser()
     parser.add_argument('name', help='Name of the project (and folder) to create')
     parser.add_argument('-t', '--template', dest='template', help="Template name (also used as the name of the template's enclosing folder)", default='Generic')
     parser.add_argument('-s', '--scm', dest='scm', help='Which source control management you would like initialized', choices=['git'])
     parser.add_argument('-c', '--contributor', dest='contributor', help='A contributor to the project', nargs=3, action='append', metavar=('cName', 'cEmail', 'cRank'))
-    parser.add_argument('-d', '--description', dest='desc', help='Very short description of the project')
+    parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
+    parser.add_argument('-d', '--directory', dest='dir', help='Custom directory location for new project')
     args = parser.parse_args()
 
 
@@ -96,14 +103,20 @@ def getDefaultProjectDir ():
     print("Default Project Dir: " + "/".join(dirs)+"/")
     return "/".join(dirs) + "/"
     
-def genExampleFolder ():
+    
+def genExampleFolder():
     # This is where the example folder will be generated
     
     ### Set global options and what not
     
+    args.
+    
+    ### Call normal create_project ###
+    
     create_project()
     
-def parseTemplate (template_path):
+    
+def parseTemplate(template_path):
     
     global gen
     global val
@@ -183,6 +196,7 @@ def generateReadme(file_template_path):
     
     temp_file.close()
     src_file.close()
+
 
 def readmeSub(matchObj):
     scope = matchObj[0]
