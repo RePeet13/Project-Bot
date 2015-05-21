@@ -111,9 +111,9 @@ def genExampleFolder():
     # est='template', dest='scm', dest='contributor', dest='info', dest='directory'
     args.template = 'Generic'
     args.scm = 'git'
-    args.contributor = []
-    args.info = ''
-    args.directory = ''
+    args.contributor = ['Broseph Peet', 'bro@unrulyrecursion.com', '1']
+    args.info = 'This is a sample description of a project'
+    # args.directory = ''
     
     ### Call normal create_project ###
     
