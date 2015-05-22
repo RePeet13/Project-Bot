@@ -54,7 +54,14 @@ def create_project():
     os.mkdir(new_path)
     
     
-def getScriptPath ():
+def getArgs(args):
+    global argD
+    argD['template'] = getattr(args, 'template', 'Generic')
+    
+    
+    
+    
+def getScriptPath():
     return os.path.dirname(os.path.realpath(__file__))
     # return os.path.dirname(os.path.realpath(sys.argv[0])) # previous solution
 
@@ -193,4 +200,3 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
     parser.add_argument('-d', '--directory', dest='directory', help='Custom directory location for new project')
     args = parser.parse_args()
-    
