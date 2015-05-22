@@ -6,59 +6,24 @@ zeros=4
 template_dir = ""
 
 
-if __name__ == "__main__":
+def genExampleFolder():
+    # This is where the example folder will be generated
     
-    global args
+    ### Set global options and what not
+    global argD
+    # est='template', dest='scm', dest='contributor', dest='info', dest='directory'
+    argD = {}
+    argD['template'] = 'Generic'
+    argD['scm'] = 'git'
+    argD['contributor'] = ['Broseph Peet', 'bro@unrulyrecursion.com', '1']
+    argD['info'] = 'This is a sample description of a project'
+    # args.directory = ''
     
-    ### Generate Example Project/Folder ###
+    ### Call normal create_project ###
     
-    genExampleFolder()
+    create_project()
     
     
-    ### Arg Parsing ###
-    
-    parser = argparse.ArgumentParser()
-    parser.add_argument('name', help='Name of the project (and folder) to create')
-    parser.add_argument('-t', '--template', dest='template', help="Template name (also used as the name of the template's enclosing folder)", default='Generic')
-    parser.add_argument('-s', '--scm', dest='scm', help='Which source control management you would like initialized', choices=['git'])
-    parser.add_argument('-c', '--contributor', dest='contributor', help='A contributor to the project', nargs=3, action='append', metavar=('cName', 'cEmail', 'cRank'))
-    parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
-    parser.add_argument('-d', '--directory', dest='directory', help='Custom directory location for new project')
-    args = parser.parse_args()
-
-
-
-
-
-# def main(argv):
-#     in_project_name = ''
-#     in_dir_name = ''
-
-#     """ Help Text """
-#     help = 'project-bot.py -p "Project Name"'
-
-#     try:
-#         opts, args = getopt.getopt(argv, "hp:d:", ["project=","directory="])
-#     except getopt.GetoptError:
-#         print help
-#         sys.exit(2)
-#     for opt, arg in opts:
-#         if opt == '-h':
-#             print help
-#             sys.exit()
-#         elif opt in ("-p", "--project"):
-#             in_project_name = arg
-#             print(in_project_name)
-#         elif opt in ("-d", "--directory"):
-#             in_dir_name = arg
-#             print(in_dir_name)
-#     if in_project_name != '':
-#         global project_name 
-#         project_name = in_project_name
-
-
-    
-   
 def create_project():
 
     global project_name
@@ -88,9 +53,11 @@ def create_project():
     project_path = new_path
     os.mkdir(new_path)
     
+    
 def getScriptPath ():
     return os.path.dirname(os.path.realpath(__file__))
     # return os.path.dirname(os.path.realpath(sys.argv[0])) # previous solution
+
 
 def getDefaultProjectDir ():
     dirs_tmp = getScriptPath().split("/")
@@ -104,24 +71,7 @@ def getDefaultProjectDir ():
     return "/".join(dirs) + "/"
     
     
-def genExampleFolder():
-    # This is where the example folder will be generated
-    
-    ### Set global options and what not
-    # est='template', dest='scm', dest='contributor', dest='info', dest='directory'
-    args.template = 'Generic'
-    args.scm = 'git'
-    args.contributor = ['Broseph Peet', 'bro@unrulyrecursion.com', '1']
-    args.info = 'This is a sample description of a project'
-    # args.directory = ''
-    
-    ### Call normal create_project ###
-    
-    create_project()
-    
-    
 def parseTemplate(template_path):
-    
     global gen
     global val
     
@@ -160,7 +110,6 @@ def parseTemplate(template_path):
     
 
 def generateReadme(file_template_path):
-    
     # Try to load src file
     try:
         src_file = open(file_template_path, 'r')
@@ -227,3 +176,21 @@ def readmeSub(matchObj):
 
 """ Actual Execution """
 # create_project()
+
+
+if __name__ == "__main__":
+    global argD
+    
+    ### Generate Example Project/Folder ###
+    genExampleFolder()
+    
+    ### Arg Parsing ###
+    parser = argparse.ArgumentParser()
+    parser.add_argument('name', help='Name of the project (and folder) to create')
+    parser.add_argument('-t', '--template', dest='template', help="Template name (also used as the name of the template's enclosing folder)", default='Generic')
+    parser.add_argument('-s', '--scm', dest='scm', help='Which source control management you would like initialized', choices=['git'])
+    parser.add_argument('-c', '--contributor', dest='contributor', help='A contributor to the project', nargs=3, action='append', metavar=('cName', 'cEmail', 'cRank'))
+    parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
+    parser.add_argument('-d', '--directory', dest='directory', help='Custom directory location for new project')
+    args = parser.parse_args()
+    
