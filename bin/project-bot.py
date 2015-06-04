@@ -1,64 +1,72 @@
-import os, sys, argparse, json, sys, re
+import os, sys, argparse, json, sys, re, shutil
+from collections import namedtuple
 
 ### Global Project defaults ###
 project_dir = "../"
 zeros=4
 template_dir = ""
 
+Contributor = namedtuple('Contributor', ['name', 'email', 'rank'])
+
+def genDefaultOptions():
+    
+    cont = Contributor('Broseph Peet', 'bro@unrulyrecursion.com', '1')
+    options = {'name': 'Example Project', 
+               'template': 'Generic',
+               'scm': 'git', 
+               'contributors': [cont],
+               'info': 'This is a sample description of a project',
+               'directory': './'}
+    return options
+    
 
 def genExampleFolder():
-    # This is where the example folder will be generated
+    # This is where the example folder is generated
     
-    ### Set global options and what not
-    global argD
-    # est='template', dest='scm', dest='contributor', dest='info', dest='directory'
-    argD = {}
-    argD['template'] = 'Generic'
-    argD['scm'] = 'git'
-    argD['contributor'] = ['Broseph Peet', 'bro@unrulyrecursion.com', '1']
-    argD['info'] = 'This is a sample description of a project'
-    # args.directory = ''
+    options = genDefaultOptions()
     
-    ### Call normal create_project ###
+    # Remove old example folder
+    existing_dirs = getProjectDirs(options['directory'])
+    if (len(existing_dirs) > 0):
+        for d in existing_dirs:
+            if (d.lower().find("example") >= 0):
+                print('Removing old example folder: ' + d)
+                shutil.rmtree(d)
     
-    create_project()
+    # Create Example just like a normal project
+    create_project(options)
     
     
-def create_project():
-
-    global project_name
-    global project_dir
+def create_project(options):
     global project_path
     
-    if project_name == '':
-        project_name = raw_input("Project name, sir: ")
+    if options['name'] == '':
+        options['name'] = raw_input("Project name, sir: ")
 
-    project_dir = getDefaultProjectDir()
-    print("Project Dir: " + str(os.listdir(project_dir)))
-    
-    existing_dirs = [x for x in os.listdir(project_dir) if not os.path.isfile(os.path.join(project_dir,x)) and x[0] != '.' and x != "bin"]
-    existing_dirs = sorted(existing_dirs)
-    print("Narrowed Dirs: "+ str(existing_dirs))
-    
-    if len(existing_dirs) == 0:
-        num = 0
-    else:
+    existing_dirs = getProjectDirs(options['directory'])
+
+    num = 0
+    if (len(existing_dirs) > 0):
         last_proj = existing_dirs[len(existing_dirs)-1]
-        num = int(last_proj.split("-")[0]) + 1
-        
+        if (last_proj.find('-') > -1):
+            num = int(last_proj.split("-")[0]) + 1
+            
     # print(last_proj)
     
-    new_path = project_dir + str(num).zfill(zeros) + "-" + project_name
+    new_path = options['directory'] + str(num).zfill(zeros) + "-" + options['name']
     print("Making dir: " + new_path)
+    
+    # TODO project_path?
     project_path = new_path
     os.mkdir(new_path)
     
     
-def getArgs(args):
-    global argD
-    argD['template'] = getattr(args, 'template', 'Generic')
-    
-    
+def getProjectDirs(d):
+    print("Project Dir: " + str(os.listdir(d)))
+    existing_dirs = [x for x in os.listdir(d) if not os.path.isfile(os.path.join(d, x)) and x[0] != '.' and x != 'bin']
+    existing_dirs = sorted(existing_dirs)
+    print("Narrowed Dirs: " + str(existing_dirs))
+    return existing_dirs
     
     
 def getScriptPath():
@@ -66,7 +74,7 @@ def getScriptPath():
     # return os.path.dirname(os.path.realpath(sys.argv[0])) # previous solution
 
 
-def getDefaultProjectDir ():
+def getDefaultProjectDir():
     dirs_tmp = getScriptPath().split("/")
     dirs = []
     for d in dirs_tmp:
@@ -186,10 +194,6 @@ def readmeSub(matchObj):
 
 
 if __name__ == "__main__":
-    global argD
-    
-    ### Generate Example Project/Folder ###
-    genExampleFolder()
     
     ### Arg Parsing ###
     parser = argparse.ArgumentParser()
@@ -200,3 +204,6 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
     parser.add_argument('-d', '--directory', dest='directory', help='Custom directory location for new project')
     args = parser.parse_args()
+    
+    ### Generate Example Project/Folder ###
+    genExampleFolder()
