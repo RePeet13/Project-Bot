@@ -189,20 +189,20 @@ def readmeSub(matchObj):
         pass
         # something's wrong, need to error out gracefully
 
-""" Actual Execution """
-# create_project()
-
 
 if __name__ == "__main__":
+    
+    # TODO arg for whether or not to generate example folder
+    # TODO arg for just generating example folder
     
     ### Arg Parsing ###
     parser = argparse.ArgumentParser()
     parser.add_argument('name', help='Name of the project (and folder) to create')
-    parser.add_argument('-t', '--template', dest='template', help="Template name (also used as the name of the template's enclosing folder)", default='Generic')
-    parser.add_argument('-s', '--scm', dest='scm', help='Which source control management you would like initialized', choices=['git'])
     parser.add_argument('-c', '--contributor', dest='contributor', help='A contributor to the project', nargs=3, action='append', metavar=('cName', 'cEmail', 'cRank'))
-    parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
     parser.add_argument('-d', '--directory', dest='directory', help='Custom directory location for new project')
+    parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
+    parser.add_argument('-s', '--scm', dest='scm', help='Which source control management you would like initialized', choices=['git'])
+    parser.add_argument('-t', '--template', dest='template', help="Template name (also used as the name of the template's enclosing folder)", default='Generic')
     args = parser.parse_args()
     
     ### Generate Example Project/Folder ###
