@@ -62,10 +62,10 @@ def create_project(options):
     
     
 def getProjectDirs(d):
-    print("Project Dir: " + str(os.listdir(d)))
+    # print("Project Dir: " + str(os.listdir(d)))
     existing_dirs = [x for x in os.listdir(d) if not os.path.isfile(os.path.join(d, x)) and x[0] != '.' and x != 'bin']
     existing_dirs = sorted(existing_dirs)
-    print("Narrowed Dirs: " + str(existing_dirs))
+    # print("Narrowed Dirs: " + str(existing_dirs))
     return existing_dirs
     
     
@@ -197,13 +197,18 @@ if __name__ == "__main__":
     
     ### Arg Parsing ###
     parser = argparse.ArgumentParser()
-    parser.add_argument('name', help='Name of the project (and folder) to create')
+    parser.add_argument('name', help='Name of the project (and folder) to create', nargs='?', default='_stop_')
     parser.add_argument('-c', '--contributor', dest='contributor', help='A contributor to the project', nargs=3, action='append', metavar=('cName', 'cEmail', 'cRank'))
     parser.add_argument('-d', '--directory', dest='directory', help='Custom directory location for new project')
+    parser.add_argument('-e', '--example', dest='example', help='Generate example folder', action='store_true')
     parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
     parser.add_argument('-s', '--scm', dest='scm', help='Which source control management you would like initialized', choices=['git'])
     parser.add_argument('-t', '--template', dest='template', help="Template name (also used as the name of the template's enclosing folder)", default='Generic')
     args = parser.parse_args()
     
-    ### Generate Example Project/Folder ###
-    genExampleFolder()
+    if ((args.name == '_stop_') or args.example):
+        ### Generate Example Project/Folder ###
+        genExampleFolder()
+    else:
+        ### Generate Project/Folder ###
+        pass
