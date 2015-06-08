@@ -2,29 +2,36 @@
     "name"      : "Generic Template",
     "prefix"    : "gn",
     "slug"      : "generic",
-    "description"   : "This is a basic template."
-    "created"   : "2015/05/06",
-    "modified"  : "2015/05/06",
-    "version"   : 1,
-    "flags"     : { "short" : "",
-                    "long"  : ["":"","":""]
+    "description"   : "This is a basic template.",
+    
+    "flags"     : { "short" : "e",
+                    "long"  : [{"example":"true"}]
                   },
     
     "structure" : [
         {
             "type"  : "folder",
-            "name"  : "gallery",
-            "path"  : "/gallery"
+            "name"  : "gallery"
         },
         {
             "type"  : "file",
             "name"  : "readme.md",
-            "path"  : "/readme.md",
-            "template" : "/files/readme.md"
+            "path"  : "",
+            "template" : "files/readme.md"
         },
         {   "type"  : "folder",
-            "name"  : "scm",
-            "path"  : "/scm"
+            "name"  : "scm"
         }
-        ]
+        ],
+    "author"    : "Taylor",
+    "created"   : "2015-05-06",
+    "modified"  : "2015-05-06",
+    "version"   : 1.0,
+    "history"   : [
+        {
+            "version"   : 1.0,
+            "comment"   : "Initial creation of template file",
+            "author"    : "TP",
+            "date"      : "2015-05-06"
+        }]
 }

@@ -1,24 +1,30 @@
-# <iProjectName> readme file #
+# <iName> readme file #
 
 ## Vision ##
-Go ahead and add a description here, but keep it short and to the point (~125 characters)
+_Go ahead and add a description here, but keep it short and to the point (~125 characters)_
+
+<iInfo>
 
 ## Project Info ##
 - Created   : <iCreatedDate>
-- Version   : 1
+- Version   : 1.0
 
 ## Author / Contributors ##
-[include author and contributors here]
-**<vAuthor-Name>** <vAuthor-Email>
+_Include author and contributors here_
+
+<avAuthor {{Name}} ({{Email}})>
+<avContributors - {{Name}} ({{Email}}) - Rank {{Rank}}>
 
 ## Information ##
-
 Get started!
 
 
 ## Template Info ##
-- Name      : <iTemplateName>
+- Name      : <tName>
 - Author    : <tAuthor>
 - Version   : <tVersion>
-- Created   : <tCreatedDate>
-- Modified  : <tModifiedDate>
+- Created   : <tCreated>
+- Modified  : <tModified>
+
+### Changelog ###
+-<atHistory {{Version}} : {{Comment}} _{{Author}} - {{Date}}_>

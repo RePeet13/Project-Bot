@@ -1,22 +1,23 @@
-import os, sys, argparse, json, sys, re, shutil
+import os, sys, argparse, json, sys, re, shutil, datetime
 from collections import namedtuple
 
 ### Global Project defaults ###
-project_dir = "../"
 zeros=4
-template_dir = ""
 
 Contributor = namedtuple('Contributor', ['name', 'email', 'rank'])
 
 def genDefaultOptions():
     
     cont = Contributor('Broseph Peet', 'bro@unrulyrecursion.com', '1')
+    script_path = getScriptPath()
     options = {'name': 'Example Project', 
-               'template': 'Generic',
+               'template_name': 'Generic',
                'scm': 'git', 
                'contributors': [cont],
                'info': 'This is a sample description of a project',
-               'directory': './'}
+               'directory': './',
+               'script_path': script_path,
+               'template_path': os.path.join(script_path, 'templates/')}
     return options
     
 
@@ -35,13 +36,19 @@ def genExampleFolder():
     
     # Create Example just like a normal project
     create_project(options)
+    return options
     
     
-def create_project(options):
-    global project_path
+def create_project(o):
+    
+    global options
+    
+    options = o
     
     if options['name'] == '':
         options['name'] = raw_input("Project name, sir: ")
+        
+    print('Creating project: ' + options['name'])
 
     existing_dirs = getProjectDirs(options['directory'])
 
@@ -53,12 +60,12 @@ def create_project(options):
             
     # print(last_proj)
     
-    new_path = options['directory'] + str(num).zfill(zeros) + "-" + options['name']
-    print("Making dir: " + new_path)
+    options['path'] = options['directory'] + str(num).zfill(zeros) + "-" + options['name']
+    print("Making dir: " + options['path'])
     
-    # TODO project_path?
-    project_path = new_path
-    os.mkdir(new_path)
+    os.mkdir(options['path'])
+    
+    parseTemplate(options)
     
     
 def getProjectDirs(d):
@@ -86,114 +93,148 @@ def getDefaultProjectDir():
     return "/".join(dirs) + "/"
     
     
-def parseTemplate(template_path):
+def parseTemplate(options):
+    print('Parsing template: ' + options['template_name'] + ' for project: ' + options['name'])
     global gen
     global val
+    global proj_name
+    
+    proj_name = options['name']
     
     try:
-        gen_file = open(template_path + 'generic.json', 'r')
+        print('Attempting to load: ' + os.path.join(options['template_path'], options['template_name'], 'generic.json'))
+        gen_file = open(os.path.join(options['template_path'], options['template_name'], 'generic.json'), 'r')
         gen = json.load(gen_file)
         gen_file.close()
     except IOError as e:
-        print "I/O error({0}): {1}".format(e.errno, e.strerror)
+        print "I/O error({0}) loading generic.json: {1}".format(e.errno, e.strerror)
         sys.exit()
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print "Unexpected error loading generic.json:", sys.exc_info()[0]
         raise
         sys.exit()
-
+    print('..loaded')
+    
     # generic.json File loaded and parsed correctly
     
     try:
-        val_file = open(template_path + 'values.json', 'r')
-        val = json.load(gen_file)
+        print('Attempting to load: ' + os.path.join(options['template_path'], options['template_name'], 'values.json'))
+        val_file = open(os.path.join(options['template_path'], options['template_name'], 'values.json'), 'r')
+        val = json.load(val_file)
         val_file.close()
     except IOError as e:
-        print "I/O error({0}): {1}".format(e.errno, e.strerror)
+        print "I/O error({0}) loading values.json: {1}".format(e.errno, e.strerror)
+        sys.exit()
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print "Unexpected error loading values.json:", sys.exc_info()[0]
         raise
+        sys.exit()
+    print('..loaded')
 
     # values.json File loaded and parsed correctly
     
+    print('Creating Structure')
     for s in gen['structure']:
         if s['type'] == "folder":
-            os.mkdir(project_dir + s['path'])
+            print('Type: Folder \n  Location: ' + os.path.join(options['path'], s['name']))
+            os.mkdir(os.path.join(options['path'], s['name']))
         elif s['type'] == "file":
+            print('Type: File')
             if s['name'] == 'readme.md':
-                generateReadme(template_path + s['template'])
+                generateReadme(options, s)
     
 
-def generateReadme(file_template_path):
+def generateReadme(options, structure):
     # Try to load src file
     try:
-        src_file = open(file_template_path, 'r')
+        print('Attempting to load: ' + os.path.join(options['template_path'], options['template_name'], structure['template']))
+        src_file = open(os.path.join(options['template_path'], options['template_name'], structure['template']), 'r')
     except IOError as e:
-        print "I/O error({0}): {1}".format(e.errno, e.strerror)
+        print "I/O error({0}) loading readme template: {1}".format(e.errno, e.strerror)
         sys.exit()
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print "Unexpected error loading readme template:", sys.exc_info()[0]
         sys.exit()
         raise
+    print('..loaded')
     # Src file loaded properly (at least we hope)
-    
     
     # Open destination file for writing!
     try:
-        temp_file = open(project_path + 'readme.md', 'w')
+        print('Attempting to load: ' + os.path.join(options['path'], structure['path'], structure['name']))
+        temp_file = open(os.path.join(options['path'], structure['name']), 'w')
     except IOError as e:
-        print "I/O error({0}): {1}".format(e.errno, e.strerror)
+        print "I/O error({0}) creating readme: {1}".format(e.errno, e.strerror)
         sys.exit()
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print "Unexpected error creating readme:", sys.exc_info()[0]
         sys.exit()
         raise
+    print('..loaded')
     # Opened successfully
     
     # Now just to go through line by line and substitute variables in src
     
-    pat = re.compile(r'<([a-z]+)>',re.I)
+    # TODO likely not matching because of the dash in vAuthor-Name
+    pat = re.compile(r'<(.+)>',re.I)
     
     for line in src_file:
         # substitute variable names for values
         l = re.sub(pat,readmeSub,line)
       
-        #perform operation and substitution on line into l
-      
-        temp_file.write(l)# + "\n") # TODO uncomment if no new lines in output
+        temp_file.write(l)
     
     temp_file.close()
     src_file.close()
 
 
 def readmeSub(matchObj):
-    scope = matchObj[0]
+    pat = matchObj.group(0)
+    vr = pat[2:len(pat)-1].lower()
+    scope = pat[1]
     
-    # Gigantic Else If statement
-    if scope == "i":    # Input Value
-        pass
-    elif scope == "l":  # Local Values (generic.json)
-        return gen[matchObj[1:]]
-    elif scope == "v":  # Values.json
-        out = ""
-        arr = matchObj[1:].split("-")
-        if len(arr) > 1:
-            # TODO handle
-            print("length of array more than 2: " + str(arr))
-            sys.exit()
-        out = out + val[arr[0][1:]][arr[1]]
-        return out
-    elif scope == "t":  # Template Values
-        return gen[matchObj[1:]]
-    else:
-        pass
-        # something's wrong, need to error out gracefully
+    scopeList = {'i' : options, 'v' : val, 'l' : gen, 't' : gen}
+    
+    print('Substituting variable: ' + vr + ' - Scope: ' + pat[1])
+    
+    if scope == 'i': # Input Value
+        if (vr == 'createddate'):
+            return str(datetime.date.today())
+        else:
+            return str(options[vr])
 
+    elif scope == "a": # Array based value
+        return readmeArraySub(scopeList[vr[0]], vr)
+    
+    elif scope not in scopeList:
+        print('Scope was not recognized: ' + scope)
+        return pat
+    
+    return str(scopeList[scope][vr])
+        
+        
+def readmeArraySub(file, vr):
+    scope = vr[0]
+    space = vr.find(' ')
+    key = vr[1:space]
+    # print('Key is: ' + key)
+    struct = vr[space:]
+    out = ''
+    
+    for a in file[key]:
+        # print('Json is: \n' + str(a))
+        tmp = struct
+        while tmp.find('{{') > -1:
+            fr = tmp.find('{{')
+            la = tmp.find('}}')
+            # print('Current Source: ' + tmp + ', Fr: ' + str(fr) + ', La: ' + str(la))
+            # print('Replacing: ' + tmp[fr+2:la])
+            tmp = tmp[0:fr] + str(a[tmp[fr+2:la]]) + tmp[la+2:]
+        out = out + tmp + '\n'
+    return out
+    
 
 if __name__ == "__main__":
-    
-    # TODO arg for whether or not to generate example folder
-    # TODO arg for just generating example folder
     
     ### Arg Parsing ###
     parser = argparse.ArgumentParser()
@@ -208,7 +249,10 @@ if __name__ == "__main__":
     
     if ((args.name == '_stop_') or args.example):
         ### Generate Example Project/Folder ###
-        genExampleFolder()
+        options = genExampleFolder()
     else:
         ### Generate Project/Folder ###
+        # TODO check each argument and add to options
+        # TODO make sure there won't be a problem with residual fields from example folder run...
         pass
+    
