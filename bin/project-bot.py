@@ -6,11 +6,14 @@ zeros=4
 
 Contributor = namedtuple('Contributor', ['name', 'email', 'rank'])
 
+
+### Default options are created in an object and returned ###
 def genDefaultOptions():
     logging.debug('Generating Default Options')
     
     cont = Contributor('Broseph Peet', 'bro@unrulyrecursion.com', '1')
     script_path = getScriptPath()
+    
     o = {'name': 'Example Project', 
                'template_name': 'Generic',
                'scm': 'git', 
@@ -22,6 +25,7 @@ def genDefaultOptions():
     return o
     
 
+### Generates an example output based on default options/template ###
 def genExampleFolder():
     # This is where the example folder is generated
     logging.debug('Generating Example Folder')
@@ -36,15 +40,15 @@ def genExampleFolder():
                 logging.info('Removing old example folder: ' + d)
                 shutil.rmtree(d)
     
-    # Create Example just like a normal project
+    # Create Example how you would a normal project
     create_project(o)
     return o
     
     
+### Heart of this program: Creates a project with the given options ###
 def create_project(o):
     
     global options
-    
     options = o
     
     if options['name'] == '':
@@ -69,6 +73,7 @@ def create_project(o):
     parseTemplate(options)
     
     
+### Returns list of directories within the given directory ###
 def getProjectDirs(d):
     logging.debug("Project Dir: " + str(os.listdir(d)))
     existing_dirs = [x for x in os.listdir(d) if not os.path.isfile(os.path.join(d, x)) and x[0] != '.' and x != 'bin']
@@ -77,30 +82,16 @@ def getProjectDirs(d):
     return existing_dirs
     
     
+### Path where this script resides ###
 def getScriptPath():
     return os.path.dirname(os.path.realpath(__file__))
-    # return os.path.dirname(os.path.realpath(sys.argv[0])) # previous solution
-
-
-def getDefaultProjectDir():
-    dirs_tmp = getScriptPath().split("/")
-    dirs = []
-    for d in dirs_tmp:
-        if d == "bin":
-            break
-        else:
-            dirs.append(d)
-    logging.debug("Default Project Dir: " + "/".join(dirs)+"/")
-    return "/".join(dirs) + "/"
     
     
+### Method that does the high level parsing for templates ###
 def parseTemplate(options):
     logging.info('Parsing template: ' + options['template_name'] + ' for project: ' + options['name'])
     global gen
     global val
-    global proj_name
-    
-    proj_name = options['name']
     
     try:
         logging.info('Attempting to load: ' + os.path.join(options['template_path'], options['template_name'], 'generic.json'))
@@ -144,7 +135,8 @@ def parseTemplate(options):
             if s['name'] == 'readme.md':
                 generateReadme(options, s)
     
-
+### Special Case file generation for readme ###
+# Consider generalizing
 def generateReadme(options, structure):
     logging.info('Loading readme files')
     # Try to load src file
@@ -190,15 +182,18 @@ def generateReadme(options, structure):
     src_file.close()
 
 
+### Sub Method called by regex convention - Performs the replacement ###
 def readmeSub(matchObj):
     pat = matchObj.group(0)
     vr = pat[2:len(pat)-1]
     scope = pat[1]
     
+    # Use dictionary to relate the scope and the src the data should come from
     scopeList = {'i' : options, 'v' : val, 'l' : gen, 't' : gen}
     
     logging.debug('Substituting variable: ' + vr + ' - Scope: ' + pat[1])
     
+    # Special cases can return sooner
     if scope == 'i': # Input Value
         if (vr.lower() == 'createddate'):
             return str(datetime.date.today())
@@ -212,25 +207,35 @@ def readmeSub(matchObj):
         logging.warning('Scope was not recognized: ' + scope)
         return pat
     
+    # General purpose case
     return str(scopeList[scope][vr.lower()])
         
-        
+    
+### Special case for replacement when arrays are involved ###
 def readmeArraySub(file, vr):
     scope = vr[0]
+    # Should always be a space separating scope/name from the rest of the line
     space = vr.find(' ')
+    # Key for the array from the data file
     key = vr[1:space]
     logging.debug('Key is: ' + key)
+    # Virgin structure of the line so each entry of data can start fresh
     struct = vr[space:]
     out = ''
     
+    # Loop over data returned by the key
     for a in file[key.lower()]:
-        # print('Json is: \n' + str(a))
+        logging.debug('Json is: \n' + str(a))
         tmp = struct
+        
+        # Go through the line and make replacements as you can
+        # TODO make more error tolerant (currently surfaces list entry errors and dies)
         while tmp.find('{{') > -1:
             fr = tmp.find('{{')
             la = tmp.find('}}')
             logging.debug('Current Source: ' + tmp + ', Fr: ' + str(fr) + ', La: ' + str(la))
             logging.debug('Replacing: ' + tmp[fr+2:la])
+            # the offending line with the possible errors \/
             tmp = tmp[0:fr] + str(a[tmp[fr+2:la].lower()]) + tmp[la+2:]
         out = out + tmp + '\n'
     return out
@@ -263,7 +268,7 @@ if __name__ == "__main__":
     
     if ((args.name == '_stop_') or args.example):
         ### Generate Example Project/Folder ###
-        o = genExampleFolder()
+        genExampleFolder()
     else:
         ### Generate Project/Folder ###
         
