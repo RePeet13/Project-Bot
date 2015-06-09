@@ -31,6 +31,8 @@ def genExampleFolder():
     logging.debug('Generating Example Folder')
     
     o = genDefaultOptions()
+    # TODO Good candidate for use of a config file (settable default folders)
+    o['directory'] = o['script_path']
     
     # Remove old example folder
     existing_dirs = getProjectDirs('./')

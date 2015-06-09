@@ -3,7 +3,6 @@
     "prefix"    : "gn",
     "slug"      : "generic",
     "description"   : "This is a basic template.",
-    
     "flags"     : { "short" : "e",
                     "long"  : [{"example":"true"}]
                   },
