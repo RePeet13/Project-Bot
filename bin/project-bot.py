@@ -256,6 +256,9 @@ def initGit(d):
     
 
 if __name__ == "__main__":
+    global cwd
+    cwd = os.getcwd()
+    
     
     ### Arg Parsing ###
     parser = argparse.ArgumentParser()
@@ -289,6 +292,8 @@ if __name__ == "__main__":
         # TODO check each argument and add to options
         # TODO make sure there won't be a problem with residual fields from example folder run...
         
+        os.chdir(cwd)
+        
         # Set arguments with default options
         o = genDefaultOptions();
         logging.debug('Defaults: ' + str(o))
@@ -303,3 +308,6 @@ if __name__ == "__main__":
         logging.info('Args with Defaults: ' + str(o))
         # Call Project Creation
         create_project(o)
+        
+    ### Reset working directory to original ###
+    os.chdir(cwd)
