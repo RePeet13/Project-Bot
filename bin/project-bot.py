@@ -10,24 +10,24 @@ def genDefaultOptions():
     
     cont = Contributor('Broseph Peet', 'bro@unrulyrecursion.com', '1')
     script_path = getScriptPath()
-    options = {'name': 'Example Project', 
+    o = {'name': 'Example Project', 
                'template_name': 'Generic',
                'scm': 'git', 
                'contributors': [cont],
                'info': 'This is a sample description of a project',
-               'directory': './',
+               'directory': '../',
                'script_path': script_path,
                'template_path': os.path.join(script_path, 'templates/')}
-    return options
+    return o
     
 
 def genExampleFolder():
     # This is where the example folder is generated
     
-    options = genDefaultOptions()
+    o = genDefaultOptions()
     
     # Remove old example folder
-    existing_dirs = getProjectDirs(options['directory'])
+    existing_dirs = getProjectDirs('./')
     if (len(existing_dirs) > 0):
         for d in existing_dirs:
             if (d.lower().find("example") >= 0):
@@ -35,8 +35,8 @@ def genExampleFolder():
                 shutil.rmtree(d)
     
     # Create Example just like a normal project
-    create_project(options)
-    return options
+    create_project(o)
+    return o
     
     
 def create_project(o):
@@ -239,7 +239,7 @@ if __name__ == "__main__":
     ### Arg Parsing ###
     parser = argparse.ArgumentParser()
     parser.add_argument('name', help='Name of the project (and folder) to create', nargs='?', default='_stop_')
-    parser.add_argument('-c', '--contributor', dest='contributor', help='A contributor to the project', nargs=3, action='append', metavar=('cName', 'cEmail', 'cRank'))
+    parser.add_argument('-c', '--contributors', dest='contributors', help='Contributors to the project', nargs=3, action='append', metavar=('cName', 'cEmail', 'cRank'))
     parser.add_argument('-d', '--directory', dest='directory', help='Custom directory location for new project')
     parser.add_argument('-e', '--example', dest='example', help='Generate example folder', action='store_true')
     parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
@@ -249,10 +249,25 @@ if __name__ == "__main__":
     
     if ((args.name == '_stop_') or args.example):
         ### Generate Example Project/Folder ###
-        options = genExampleFolder()
+        o = genExampleFolder()
     else:
         ### Generate Project/Folder ###
+        
         # TODO check each argument and add to options
         # TODO make sure there won't be a problem with residual fields from example folder run...
-        pass
+        
+        # Set arguments with default options
+        o = genDefaultOptions();
+        print('Defaults: ' + str(o))
+        print('Args: ' + str(args))
+        o['name'] = args.name # This will either be true, or get a default value that won't reach this point
+        o['contributors'] = o['contributors'] if getattr(args, 'contributors') is None else args.contributors
+        o['directory'] = o['directory'] if getattr(args, 'directory', o['directory']) is None else args.directory
+        o['example'] = args.example # This always gets either true or false, no need for default here
+        o['info'] = o['info'] if getattr(args, 'info') is None else args.info
+        o['scm'] = o['scm'] if getattr(args, 'scm', o['scm']) is None else args.scm
+        o['template_name'] = o['template_name'] if getattr(args, 'template') is None else args.template
+        print('Combined: ' + str(o))
+        # Call Project Creation
+        create_project(o)
     
