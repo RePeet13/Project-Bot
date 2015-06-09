@@ -190,7 +190,7 @@ def generateReadme(options, structure):
 
 def readmeSub(matchObj):
     pat = matchObj.group(0)
-    vr = pat[2:len(pat)-1].lower()
+    vr = pat[2:len(pat)-1]
     scope = pat[1]
     
     scopeList = {'i' : options, 'v' : val, 'l' : gen, 't' : gen}
@@ -198,10 +198,10 @@ def readmeSub(matchObj):
     print('Substituting variable: ' + vr + ' - Scope: ' + pat[1])
     
     if scope == 'i': # Input Value
-        if (vr == 'createddate'):
+        if (vr.lower() == 'createddate'):
             return str(datetime.date.today())
         else:
-            return str(options[vr])
+            return str(options[vr.lower()])
 
     elif scope == "a": # Array based value
         return readmeArraySub(scopeList[vr[0]], vr)
@@ -210,7 +210,7 @@ def readmeSub(matchObj):
         print('Scope was not recognized: ' + scope)
         return pat
     
-    return str(scopeList[scope][vr])
+    return str(scopeList[scope][vr.lower()])
         
         
 def readmeArraySub(file, vr):
@@ -221,7 +221,7 @@ def readmeArraySub(file, vr):
     struct = vr[space:]
     out = ''
     
-    for a in file[key]:
+    for a in file[key.lower()]:
         # print('Json is: \n' + str(a))
         tmp = struct
         while tmp.find('{{') > -1:
@@ -229,7 +229,7 @@ def readmeArraySub(file, vr):
             la = tmp.find('}}')
             # print('Current Source: ' + tmp + ', Fr: ' + str(fr) + ', La: ' + str(la))
             # print('Replacing: ' + tmp[fr+2:la])
-            tmp = tmp[0:fr] + str(a[tmp[fr+2:la]]) + tmp[la+2:]
+            tmp = tmp[0:fr] + str(a[tmp[fr+2:la].lower()]) + tmp[la+2:]
         out = out + tmp + '\n'
     return out
     
