@@ -1,5 +1,6 @@
 import os, sys, argparse, json, sys, re, shutil, datetime, logging
 from collections import namedtuple
+from git import Repo
 
 ### Global Project defaults ###
 zeros=4
@@ -67,6 +68,7 @@ def create_project(o):
             num = int(last_proj.split("-")[0]) + 1
         logging.debug(last_proj)
     
+    # TODO investigate if this should be os.path.join
     options['path'] = options['directory'] + str(num).zfill(zeros) + "-" + options['name']
     logging.info("Making dir: " + options['path'])
     
@@ -213,6 +215,13 @@ def readmeSub(matchObj):
     return str(scopeList[scope][vr.lower()])
         
     
+### Initialize a bare repo at the given directory ###
+# TODO move down below following method
+# TODO null check and directory existence check
+def initGit(d):
+    bare_repo = Repo.init(d, bare=true)
+    
+    
 ### Special case for replacement when arrays are involved ###
 def readmeArraySub(file, vr):
     scope = vr[0]
@@ -291,4 +300,3 @@ if __name__ == "__main__":
         logging.info('Args with Defaults: ' + str(o))
         # Call Project Creation
         create_project(o)
-    
