@@ -10,7 +10,8 @@
     "structure" : [
         {
             "type"  : "folder",
-            "name"  : "gallery"
+            "name"  : "gallery",
+            "path"  : ""
         },
         {
             "type"  : "file",
@@ -18,8 +19,9 @@
             "path"  : "",
             "template" : "files/readme.md"
         },
-        {   "type"  : "folder",
-            "name"  : "scm"
+        {   "type"  : "git",
+            "name"  : "scm",
+            "path"  : ""
         }
         ],
     "author"    : "Taylor",

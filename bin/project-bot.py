@@ -1,6 +1,5 @@
-import os, sys, argparse, json, sys, re, shutil, datetime, logging
+import os, sys, argparse, json, sys, re, shutil, datetime, logging, subprocess
 from collections import namedtuple
-from git import Repo
 
 ### Global Project defaults ###
 zeros=4
@@ -131,13 +130,16 @@ def parseTemplate(options):
     
     logging.info('Creating Structure')
     for s in gen['structure']:
-        if s['type'] == "folder":
-            logging.debug('Type: Folder \n  Location: ' + os.path.join(options['path'], s['name']))
-            os.mkdir(os.path.join(options['path'], s['name']))
-        elif s['type'] == "file":
+        if s['type'] == 'folder':
+            logging.debug('Type: Folder \n  Location: ' + os.path.join(options['path'], s['path'], s['name']))
+            os.mkdir(os.path.join(options['path'], s['path'], s['name']))
+        elif s['type'] == 'file':
             logging.debug('Type: File')
             if s['name'] == 'readme.md':
                 generateReadme(options, s)
+        elif s['type'] == 'git':
+            logging.debug('Type: Git \n  Location: ' + os.path.join(options['path'], s['path'], s['name']))
+            initGit(os.path.join(options['path'], s['path'], s['name']))
     
 ### Special Case file generation for readme ###
 # Consider generalizing
@@ -213,13 +215,6 @@ def readmeSub(matchObj):
     
     # General purpose case
     return str(scopeList[scope][vr.lower()])
-        
-    
-### Initialize a bare repo at the given directory ###
-# TODO move down below following method
-# TODO null check and directory existence check
-def initGit(d):
-    bare_repo = Repo.init(d, bare=true)
     
     
 ### Special case for replacement when arrays are involved ###
@@ -250,6 +245,14 @@ def readmeArraySub(file, vr):
             tmp = tmp[0:fr] + str(a[tmp[fr+2:la].lower()]) + tmp[la+2:]
         out = out + tmp + '\n'
     return out
+    
+        
+### Initialize a bare repo at the given directory ###
+# TODO move down below following method
+# TODO null check and directory existence check
+def initGit(d):
+    logging.info('Initializing git repo at: ' + d)
+    subprocess.call(['git', 'init'])
     
 
 if __name__ == "__main__":
