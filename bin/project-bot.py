@@ -20,7 +20,7 @@ def genDefaultOptions():
                'contributors': [cont],
                'info': 'This is a sample description of a project',
                'directory': '../',
-               'script_path': script_path,
+               'script_path': script_path + '/',
                'template_path': os.path.join(script_path, 'templates/')}
     return o
     
@@ -35,7 +35,7 @@ def genExampleFolder():
     o['directory'] = o['script_path']
     
     # Remove old example folder
-    existing_dirs = getProjectDirs('./')
+    existing_dirs = getProjectDirs(o['directory'])
     if (len(existing_dirs) > 0):
         for d in existing_dirs:
             if (d.lower().find("example") >= 0):
