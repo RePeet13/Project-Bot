@@ -7,6 +7,7 @@ zeros=4
 Contributor = namedtuple('Contributor', ['name', 'email', 'rank'])
 
 def genDefaultOptions():
+    logging.debug('Generating Default Options')
     
     cont = Contributor('Broseph Peet', 'bro@unrulyrecursion.com', '1')
     script_path = getScriptPath()
@@ -23,6 +24,7 @@ def genDefaultOptions():
 
 def genExampleFolder():
     # This is where the example folder is generated
+    logging.debug('Generating Example Folder')
     
     o = genDefaultOptions()
     
