@@ -1,0 +1,20 @@
+### Templates ###
+# The default template to be followed if one is not specified in the arguments
+template_default=Generic
+
+# Additional folders to look for templates in. List higher priority first
+#template_folder=./
+
+
+### Directories ###
+# The project directory is the default location of your awesome projects.
+project_dir=../
+
+
+### People ###
+# Put your default author information here. Be aware this will be overridden by author information in the template, and information passed in as an argument.
+# Author override priority goes: Argument > Template > Config file
+#author=name,email
+
+# Specify your global default contributors here, each on they're own new line, in the format below.
+#contributor=name,email,rank
