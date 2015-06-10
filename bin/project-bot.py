@@ -138,11 +138,12 @@ def parseTemplate(options):
             logging.debug('Type: File')
             if s['name'] == 'readme.md':
                 generateReadme(options, s)
-        elif s['type'] == 'git':
+        elif s['type'] == 'git' and options['scm'] == 'git':
             logging.debug('Type: Git \n  Location: ' + os.path.join(options['path'], s['path'], s['name']))
             initGit(os.path.join(options['path'], s['path'], s['name']))
             
-    if not options['scm_init']:
+    # TODO Consider whether template scm things (or template things in general) should override lack of argument (Think they should)
+    if not options['scm_init'] and not options['scm'] == '_stop_':
         # TODO logic for which scm to init
         initGit(options['path'])
     
@@ -299,9 +300,6 @@ if __name__ == "__main__":
     else:
         ### Generate Project/Folder ###
         
-        # TODO check each argument and add to options
-        # TODO make sure there won't be a problem with residual fields from example folder run...
-        
         os.chdir(cwd)
         
         # Set arguments with default options
@@ -313,7 +311,7 @@ if __name__ == "__main__":
         o['directory'] = o['directory'] if getattr(args, 'directory', o['directory']) is None else args.directory
         o['example'] = args.example # This always gets either true or false, no need for default here
         o['info'] = o['info'] if getattr(args, 'info') is None else args.info
-        o['scm'] = o['scm'] if getattr(args, 'scm', o['scm']) is None else args.scm
+        o['scm'] = '_stop_' if getattr(args, 'scm', o['scm']) is None else args.scm
         o['template_name'] = o['template_name'] if getattr(args, 'template') is None else args.template
         logging.info('Args with Defaults: ' + str(o))
         # Call Project Creation
