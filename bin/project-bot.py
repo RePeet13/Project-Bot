@@ -17,6 +17,7 @@ def genDefaultOptions():
     o = {'name': 'Example Project', 
                'template_name': 'Generic',
                'scm': 'git', 
+               'scm_init': False,
                'contributors': [cont],
                'info': 'This is a sample description of a project',
                'directory': '../',
@@ -71,7 +72,6 @@ def create_project(o):
     options['path'] = options['directory'] + str(num).zfill(zeros) + "-" + options['name']
     logging.info("Making dir: " + options['path'])
     os.mkdir(options['path'])
-    
     os.chdir(options['path'])
     
     parseTemplate(options)
@@ -141,6 +141,11 @@ def parseTemplate(options):
         elif s['type'] == 'git':
             logging.debug('Type: Git \n  Location: ' + os.path.join(options['path'], s['path'], s['name']))
             initGit(os.path.join(options['path'], s['path'], s['name']))
+            
+    if not options['scm_init']:
+        # TODO logic for which scm to init
+        initGit(options['path'])
+    
     
 ### Special Case file generation for readme ###
 # Consider generalizing
@@ -257,6 +262,7 @@ def initGit(d):
     logging.info('Initializing git repo at: ' + d)
     subprocess.call(['git', 'init'])
     os.chdir(c)
+    options['scm_init'] = True
     
 
 if __name__ == "__main__":
