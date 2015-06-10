@@ -70,8 +70,9 @@ def create_project(o):
     # TODO investigate if this should be os.path.join
     options['path'] = options['directory'] + str(num).zfill(zeros) + "-" + options['name']
     logging.info("Making dir: " + options['path'])
-    
     os.mkdir(options['path'])
+    
+    os.chdir(options['path'])
     
     parseTemplate(options)
     
@@ -248,11 +249,14 @@ def readmeArraySub(file, vr):
     
         
 ### Initialize a bare repo at the given directory ###
-# TODO move down below following method
 # TODO null check and directory existence check
 def initGit(d):
+    c = os.getcwd()
+    os.mkdir(d)
+    os.chdir(d)
     logging.info('Initializing git repo at: ' + d)
     subprocess.call(['git', 'init'])
+    os.chdir(c)
     
 
 if __name__ == "__main__":
