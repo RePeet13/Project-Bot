@@ -60,6 +60,7 @@ def create_project(o):
     logging.info('Creating project: ' + options['name'])
 
     existing_dirs = getProjectDirs(options['directory'])
+    existing_dirs = weedOutNonNumberedDirs(existing_dirs)
 
     num = 0
     if (len(existing_dirs) > 0):
@@ -69,7 +70,7 @@ def create_project(o):
         logging.debug(last_proj)
     
     # TODO investigate if this should be os.path.join
-    options['path'] = options['directory'] + str(num).zfill(zeros) + "-" + options['name']
+    options['path'] = os.path.join(options['directory'], (str(num).zfill(zeros) + "-" + options['name']))
     logging.info("Making dir: " + options['path'])
     os.mkdir(options['path'])
     os.chdir(options['path'])
@@ -80,11 +81,21 @@ def create_project(o):
 ### Returns list of directories within the given directory ###
 def getProjectDirs(d):
     logging.debug("Project Dir: " + str(os.listdir(d)))
-    existing_dirs = [x for x in os.listdir(d) if not os.path.isfile(os.path.join(d, x)) and x[0] != '.' and x != 'bin']
+    existing_dirs = [x for x in os.listdir(d) if not os.path.isfile(os.path.join(d, x)) and x[0] != '.*' and x != 'bin']
     existing_dirs = sorted(existing_dirs)
     logging.debug("Narrowed Dirs: " + str(existing_dirs))
     return existing_dirs
-    
+
+
+def weedOutNonNumberedDirs(d):
+    logging.debug("Weeding out non-numbered directories")
+    logging.debug("Before: \n" + str(d))
+
+    d = [x for x in d if x[0].isdigit()]
+
+    logging.debug("After: \n" + str(d))
+    return d
+
     
 ### Path where this script resides ###
 def getScriptPath():
