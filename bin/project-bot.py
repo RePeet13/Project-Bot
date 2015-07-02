@@ -272,9 +272,14 @@ def initGit(d):
     os.mkdir(d)
     os.chdir(d)
     logging.info('Initializing git repo at: ' + d)
-    subprocess.call(['git', 'init'])
+
+    # Only support Linux and Mac for git at the moment
+    if sys.platform.startswith('linux') or sys.platform.startswith('darwin'): # https://docs.python.org/2/library/sys.html#sys.platform
+        subprocess.call(['git', 'init'])
+        options['scm_init'] = True
+    else:
+        logging.info('Git repo not initialized')
     os.chdir(c)
-    options['scm_init'] = True
     
 
 if __name__ == "__main__":
