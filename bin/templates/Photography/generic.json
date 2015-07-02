@@ -1,0 +1,74 @@
+{
+    "name"      : "Photography Template",
+    "prefix"    : "ph",
+    "slug"      : "photography",
+    "description"   : "Template for photography projects, including the lightroom edit portion.",
+    "flags"     : { "short" : "e",
+                    "long"  : [{"example":"true"}]
+                  },
+    
+    "structure" : [
+        {
+            "type"  : "folder",
+            "name"  : "gallery",
+            "path"  : ""
+        },
+        {
+            "type"  : "file",
+            "name"  : "readme.md",
+            "path"  : "",
+            "template" : "files/readme.md"
+        },
+        {   "type"  : "folder",
+            "name"  : "lightroom",
+            "path"  : ""
+        },
+        {   "type"  : "folder",
+            "name"  : "01-top",
+            "path"  : "lightroom"
+        },
+        {   "type"  : "folder",
+            "name"  : "02-good",
+            "path"  : "lightroom"
+        },
+        {   "type"  : "folder",
+            "name"  : "03-funny",
+            "path"  : "lightroom"
+        },
+        {   "type"  : "folder",
+            "name"  : "04-bad",
+            "path"  : "lightroom"
+        },
+        {   "type"  : "folder",
+            "name"  : "05-dump",
+            "path"  : "lightroom"
+        },
+        {   "type"  : "folder",
+            "name"  : "06-panoramas",
+            "path"  : "lightroom"
+        },
+        {   "type"  : "folder",
+            "name"  : "01",
+            "path"  : "lightroom/06-panoramas"
+        },
+        {   "type"  : "folder",
+            "name"  : "02",
+            "path"  : "lightroom/06-panoramas"
+        },
+        {   "type"  : "folder",
+            "name"  : "03",
+            "path"  : "lightroom/06-panoramas"
+        }
+        ],
+    "author"    : "Taylor",
+    "created"   : "2015-07-02",
+    "modified"  : "2015-07-02",
+    "version"   : 1.0,
+    "history"   : [
+        {
+            "version"   : 1.0,
+            "comment"   : "Initial creation of template file",
+            "author"    : "TP",
+            "date"      : "2015-07-02"
+        }]
+}
