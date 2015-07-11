@@ -146,9 +146,13 @@ def parseTemplate(options):
             logging.debug('Type: Folder \n  Location: ' + os.path.join(options['path'], s['path'], s['name']))
             os.mkdir(os.path.join(options['path'], s['path'], s['name']))
         elif s['type'] == 'file':
-            logging.debug('Type: File')
-            if s['name'] == 'readme.md':
-                generateReadme(options, s)
+            logging.debug('Type: ' + s['type'] + ', Strategy: ' + s['strategy'] + ', Template: ' + s['template'])
+            if s['strategy'] == 'generate':
+                if s['name'] == 'readme.md':
+                    generateReadme(options, s)
+            elif s['strategy'] == 'copy':
+                shutil.copy(os.path.join(options['template_path'], options['template_name'], s['template']), os.path.join(options['path'], s['path'], s['name']))
+                # TODO catch error here and handle gracefully
         elif s['type'] == 'git' and options['scm'] == 'git':
             logging.debug('Type: Git \n  Location: ' + os.path.join(options['path'], s['path'], s['name']))
             initGit(os.path.join(options['path'], s['path'], s['name']))
