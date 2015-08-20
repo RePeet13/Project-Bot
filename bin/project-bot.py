@@ -30,37 +30,51 @@ def genDefaultOptions():
 def genExampleFolder():
     # This is where the example folder is generated
     logging.info('Generating Example Folders')
-
-    o = genDefaultOptions()
-
-    # TODO delete then create folder to house example folders
     
-    for d in os.listdir(os.path.join(o['script_path'], 'templates/')):
+    # TODO consider allowing the generation of just one template (nondestructive to entire example folder) for when people have tons of templates
+
+    defExampleFolder = getDefaultExamplesFolder()
+
+    # Remove old example folder
+    existing_dirs = getProjectDirs("./")
+    if (len(existing_dirs) > 0):
+        for d in existing_dirs:
+            # TODO improve this to check for the exact folder, and delete if present
+            if (d.lower().find("generatedExamples".lower()) >= 0):
+                logging.info('Removing old example folder: ' + d)
+                shutil.rmtree(d)
+
+    os.mkdir(defExampleFolder)
+    
+    for d in getProjectDirs(os.path.join(getScriptPath(), 'templates/')):
+
+        o = genDefaultOptions()
 
         logging.debug('Processing template:  ' + d)
         o['template_name'] = d
-
-        # TODO Good candidate for use of a config file (settable default folders)
-        o['directory'] = o['script_path']
-        
-        # Remove old example folder
-        existing_dirs = getProjectDirs(o['directory'])
-        if (len(existing_dirs) > 0):
-            for d in existing_dirs:
-                if (d.lower().find("example") >= 0):
-                    logging.info('Removing old example folder: ' + d)
-                    shutil.rmtree(d)
+        o['name'] = o['name'] + " (" + d + ")"
+        o['directory'] = os.path.join("./", defExampleFolder)
+        o['scm'] = '_stop_'
         
         # Create Example how you would a normal project
         create_project(o)
 
-        o = genDefaultOptions()
-
     return o
     
     
+### Get Default Examples folder
+def getDefaultExamplesFolder():
+    return "generatedExamples"
+
+
+### Get Config file values as a map
+def parseConfig():
+    pass
+
+
 ### Heart of this program: Creates a project with the given options ###
 def create_project(o):
+    c = os.getcwd()
     
     global options
     options = o
@@ -68,7 +82,7 @@ def create_project(o):
     if options['name'] == '':
         options['name'] = raw_input("Project name, sir: ")
         
-    logging.info('Creating project: ' + options['name'])
+    logging.info('Creating project: ' + options['name'] + "\n   CWD: " + os.getcwd())
 
     existing_dirs = getProjectDirs(options['directory'])
     existing_dirs = weedOutNonNumberedDirs(existing_dirs)
@@ -80,19 +94,19 @@ def create_project(o):
             num = int(last_proj.split("-")[0]) + 1
         logging.debug(last_proj)
     
-    # TODO investigate if this should be os.path.join
     options['path'] = os.path.join(options['directory'], (str(num).zfill(zeros) + "-" + options['name']))
     logging.info("Making dir: " + options['path'])
     os.mkdir(options['path'])
     os.chdir(options['path'])
     
     parseTemplate(options)
-    
+    os.chdir(c)
+
     
 ### Returns list of directories within the given directory ###
 def getProjectDirs(d):
     logging.debug("Project Dir: " + str(os.listdir(d)))
-    existing_dirs = [x for x in os.listdir(d) if not os.path.isfile(os.path.join(d, x)) and x[0] != '.*' and x != 'bin']
+    existing_dirs = [x for x in os.listdir(d) if not os.path.isfile(os.path.join(d, x)) and x[0] != '.' and x != 'bin']
     existing_dirs = sorted(existing_dirs)
     logging.debug("Narrowed Dirs: " + str(existing_dirs))
     return existing_dirs
@@ -153,25 +167,26 @@ def parseTemplate(options):
     
     logging.info('Creating Structure')
     for s in gen['structure']:
+        logging.debug('Current Working Directory: ' + os.getcwd())
         if s['type'] == 'folder':
-            logging.debug('Type: Folder \n  Location: ' + os.path.join(options['path'], s['path'], s['name']))
-            os.mkdir(os.path.join(options['path'], s['path'], s['name']))
+            logging.debug('Type: Folder \n  Location: ' + os.path.join(s['path'], s['name']))
+            os.mkdir(os.path.join(s['path'], s['name']))
         elif s['type'] == 'file':
             logging.debug('Type: ' + s['type'] + ', Strategy: ' + s['strategy'] + ', Template: ' + s['template'])
             if s['strategy'] == 'generate':
                 if s['name'] == 'readme.md':
                     generateReadme(options, s)
             elif s['strategy'] == 'copy':
-                shutil.copy(os.path.join(options['template_path'], options['template_name'], s['template']), os.path.join(options['path'], s['path'], s['name']))
+                shutil.copy(os.path.join(options['template_path'], options['template_name'], s['template']), os.path.join(s['path'], s['name']))
                 # TODO catch error here and handle gracefully
         elif s['type'] == 'git' and options['scm'] == 'git':
-            logging.debug('Type: Git \n  Location: ' + os.path.join(options['path'], s['path'], s['name']))
-            initGit(os.path.join(options['path'], s['path'], s['name']))
+            logging.debug('Type: Git \n  Location: ' + os.path.join(s['path'], s['name']))
+            initGit(os.path.join(s['path'], s['name']))
             
-    # TODO Consider whether template scm things (or template things in general) should override lack of argument (Think they should)
+    # TODO Confirm this is the right was to handle the scm flag
     if not options['scm_init'] and not options['scm'] == '_stop_':
         # TODO logic for which scm to init
-        initGit(options['path'])
+        initGit(os.path.join(os.getcwd(), "scm"))
     
     
 ### Special Case file generation for readme ###
@@ -194,8 +209,8 @@ def generateReadme(options, structure):
     
     # Open destination file for writing!
     try:
-        logging.info('Attempting to load: ' + os.path.join(options['path'], structure['path'], structure['name']))
-        temp_file = open(os.path.join(options['path'], structure['name']), 'w')
+        logging.info('Attempting to load: ' + os.path.join(structure['path'], structure['name']))
+        temp_file = open(os.path.join(structure['name']), 'w')
     except IOError as e:
         logging.error("I/O error({0}) creating readme: {1}".format(e.errno, e.strerror))
         sys.exit()
@@ -350,3 +365,5 @@ if __name__ == "__main__":
         
     ### Reset working directory to original ###
     os.chdir(cwd)
+
+
