@@ -18,7 +18,8 @@
             "type"  : "file",
             "name"  : "readme.md",
             "path"  : "",
-            "template" : "files/readme.md"
+            "template" : "files/readme.md",
+            "strategy" : "generate"
         },
         {   "type"  : "git",
             "name"  : "scm",
