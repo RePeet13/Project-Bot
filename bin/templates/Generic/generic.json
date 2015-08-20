@@ -1,6 +1,7 @@
 {
     "name"      : "Generic Template",
     "prefix"    : "gn",
+    "suffix"    : "gn",
     "slug"      : "generic",
     "description"   : "This is a basic template.",
     "flags"     : { "short" : "e",

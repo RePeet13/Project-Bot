@@ -1,6 +1,7 @@
 {
     "name"      : "Photography Template",
     "prefix"    : "ph",
+    "suffix"    : "ph",
     "slug"      : "photography",
     "description"   : "Template for photography projects, including the lightroom edit portion.",
     "flags"     : { "short" : "e",

@@ -29,22 +29,33 @@ def genDefaultOptions():
 ### Generates an example output based on default options/template ###
 def genExampleFolder():
     # This is where the example folder is generated
-    logging.debug('Generating Example Folder')
-    
+    logging.info('Generating Example Folders')
+
     o = genDefaultOptions()
-    # TODO Good candidate for use of a config file (settable default folders)
-    o['directory'] = o['script_path']
+
+    # TODO delete then create folder to house example folders
     
-    # Remove old example folder
-    existing_dirs = getProjectDirs(o['directory'])
-    if (len(existing_dirs) > 0):
-        for d in existing_dirs:
-            if (d.lower().find("example") >= 0):
-                logging.info('Removing old example folder: ' + d)
-                shutil.rmtree(d)
-    
-    # Create Example how you would a normal project
-    create_project(o)
+    for d in os.listdir(os.path.join(o['script_path'], 'templates/')):
+
+        logging.debug('Processing template:  ' + d)
+        o['template_name'] = d
+
+        # TODO Good candidate for use of a config file (settable default folders)
+        o['directory'] = o['script_path']
+        
+        # Remove old example folder
+        existing_dirs = getProjectDirs(o['directory'])
+        if (len(existing_dirs) > 0):
+            for d in existing_dirs:
+                if (d.lower().find("example") >= 0):
+                    logging.info('Removing old example folder: ' + d)
+                    shutil.rmtree(d)
+        
+        # Create Example how you would a normal project
+        create_project(o)
+
+        o = genDefaultOptions()
+
     return o
     
     
