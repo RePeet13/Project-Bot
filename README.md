@@ -14,6 +14,11 @@ As a user, I want to see what arguments I can pass to Project-Bot.
 Check out the help menu.
 """python project-bot.py -h"""
 ----
+As a user, I want to see what Project-Bot is doing under the covers, because there might be an error, or I am just curious.
+
+Ok you. To see under the covers, add -v flags until you can't stand it! You can pass 0-3 vs, or as many as you want, but I only care up to 3.
+"""python project-bot.py -e -vvv"""
+---
 As a photographer, I want to have a certain folder structure to put my pictures in to work on them in other programs.
 
 Project-Bot makes this use case as easy as listing the folder structure in the template (set it and forget it!), and for each project just specify the name and the template name.
