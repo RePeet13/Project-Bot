@@ -1,8 +1,8 @@
 ### Templates ###
-# The default template to be followed if one is not specified in the arguments
+# The default template to be followed if one is not specified in the arguments.
 template_default=Generic
 
-# Additional folders to look for templates in. List higher priority first
+# Additional folders to look for templates in. List higher priority first.
 #template_folder=./
 
 
