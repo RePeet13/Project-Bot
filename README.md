@@ -16,7 +16,7 @@ Check out the help menu.
 ----
 As a user, I want to see what Project-Bot is doing under the covers, because there might be an error, or I am just curious.
 
-Ok you. To see under the covers, add -v flags until you can't stand it! You can pass 0-3 vs, or as many as you want, but I only care up to 3.
+Ok you. To see under the covers, add -v flags until you can't stand it! You can pass 0-3 vs, or as many as you want, but I only care up to 2.
 """python project-bot.py -e -vvv"""
 ---
 As a photographer, I want to have a certain folder structure to put my pictures in to work on them in other programs.
