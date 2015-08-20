@@ -10,6 +10,9 @@ template_default=Generic
 # The project directory is the default location of your awesome projects.
 project_dir=../
 
+# Folder to house generated template example projects
+example_dir=./
+
 # Number of digits to put in a project folders number (eg. 0032-Super Cool Project)
 zeros=4
 
