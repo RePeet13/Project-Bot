@@ -10,6 +10,9 @@ template_default=Generic
 # The project directory is the default location of your awesome projects.
 project_dir=../
 
+# Number of digits to put in a project folders number (eg. 0032-Super Cool Project)
+zeros=4
+
 
 ### People ###
 # Put your default author information here. Be aware this will be overridden by author information in the template, and information passed in as an argument.
