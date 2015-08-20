@@ -11,7 +11,7 @@ template_default=Generic
 project_dir=../
 
 # Folder to house generated template example projects
-example_dir=./
+example_dir=./generatedExamples
 
 # Number of digits to put in a project folders number (eg. 0032-Super Cool Project)
 zeros=4
