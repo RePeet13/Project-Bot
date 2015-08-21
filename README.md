@@ -7,22 +7,22 @@ Eventually this could be folded into a personal assistant bot, that you could us
 As a new user, I want to see a test drive!
 
 This use case is the simplest of all, as Project-Bot has built-in defaults for all of its templates. To generate them is a simple command.
-"""python project-bot.py -e"""
+```python project-bot.py -e```
 ---
 As a user, I want to see what arguments I can pass to Project-Bot.
 
 Check out the help menu.
-"""python project-bot.py -h"""
+```python project-bot.py -h```
 ----
 As a user, I want to see what Project-Bot is doing under the covers, because there might be an error, or I am just curious.
 
 Ok you. To see under the covers, add -v flags until you can't stand it! You can pass 0-3 vs, or as many as you want, but I only care up to 2.
-"""python project-bot.py -e -vvv"""
+```python project-bot.py -e -vvv```
 ---
 As a photographer, I want to have a certain folder structure to put my pictures in to work on them in other programs.
 
 Project-Bot makes this use case as easy as listing the folder structure in the template (set it and forget it!), and for each project just specify the name and the template name.
-"""python project-bot.py "Smith Family Wedding" -t "Photography" """
+```python project-bot.py "Smith Family Wedding" -t "Photography" ```
 
 ## Installation
 No installation necessary! All you need do is put the files into your root project folder(s), and you're off to the races.
