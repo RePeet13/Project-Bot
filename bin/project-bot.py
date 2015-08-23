@@ -30,7 +30,7 @@ def genDefaultOptions():
 def genExampleFolder():
     # This is where the example folder is generated
     logging.info('Generating Example Folders')
-    
+
     # TODO consider allowing the generation of just one template (nondestructive to entire example folder) for when people have tons of templates
 
     defExampleFolder = getDefaultExamplesFolder()
@@ -46,7 +46,11 @@ def genExampleFolder():
 
     os.mkdir(defExampleFolder)
     
-    for d in getProjectDirs(os.path.join(getScriptPath(), 'templates/')):
+#    t = getTemplateList()
+    t = getBuiltInTemplates()
+    logging.info('Template List : ' + t)
+
+    for d in t: #TODO make this also include any custom folder from config
 
         o = genDefaultOptions()
 
@@ -61,7 +65,26 @@ def genExampleFolder():
 
     return o
     
-    
+   
+def getTemplateList():
+    l = getTemplates()
+#    return [item for sublist in l for item in sublist] # TODO ignore empty lists
+    return getBuiltInTemplates()
+
+
+def getTemplates():
+    tmp = {}
+    tmp['builtin'] = getBuiltInTemplates()
+
+
+def getBuiltInTemplates():
+    return getProjectDirs(os.path.join(getScriptPath(), 'templates/'))
+
+
+# TODO implement this based on config file etc
+def getCustomTemplates():
+    return []
+
 ### Get Default Examples folder
 def getDefaultExamplesFolder():
     return "generatedExamples"
