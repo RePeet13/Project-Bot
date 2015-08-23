@@ -102,8 +102,8 @@ def create_project(o):
     global options
     options = o
     
-    if options['name'] == '':
-        options['name'] = raw_input("Project name, sir: ")
+    # if options['name'] == '':
+    #     options['name'] = raw_input("Project name, sir: ")
         
     logging.info('Creating project: ' + options['name'] + "\n   CWD: " + os.getcwd())
 
@@ -321,13 +321,15 @@ def readmeArraySub(file, vr):
 ### Initialize a bare repo at the given directory ###
 # TODO null check and directory existence check
 def initGit(d):
-    c = os.getcwd()
-    os.mkdir(d)
-    os.chdir(d)
-    logging.info('Initializing git repo at: ' + d)
 
     # Only support Linux and Mac for git at the moment
     if sys.platform.startswith('linux') or sys.platform.startswith('darwin'): # https://docs.python.org/2/library/sys.html#sys.platform
+
+        c = os.getcwd()
+        os.mkdir(d)
+        os.chdir(d)
+        logging.info('Initializing git repo at: ' + d)
+        
         subprocess.call(['git', 'init'])
         options['scm_init'] = True
     else:
