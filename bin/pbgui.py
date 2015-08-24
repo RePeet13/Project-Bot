@@ -18,8 +18,6 @@ class pbgui():
         self.frame = tk.Frame(self.main).grid(row=0, column=0)
 
         self.o = gdo()
-        # TODO this is a stopgap
-        self.o['scm']='_stop_'
 
         templates = gtl() #get template options
 
