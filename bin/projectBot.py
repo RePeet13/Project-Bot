@@ -125,6 +125,8 @@ def create_project(o):
     parseTemplate(options)
     os.chdir(c)
 
+    logging.info('Completed creation of : ' + options['name'] + '\n     Template used : ' + options['template_name'])
+
     
 ### Returns list of directories within the given directory ###
 def getProjectDirs(d):
@@ -206,7 +208,7 @@ def parseTemplate(options):
             logging.debug('Type: Git \n  Location: ' + os.path.join(s['path'], s['name']))
             initGit(os.path.join(s['path'], s['name']))
             
-    # TODO Confirm this is the right was to handle the scm flag
+    # TODO Confirm this is the right was to handle the scm flag (need to respect the scm flag in the generic files)
     if not options['scm_init'] and not options['scm'] == '_stop_':
         # TODO logic for which scm to init
         initGit(os.path.join(os.getcwd(), "scm"))
@@ -349,7 +351,7 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--directory', dest='directory', help='Custom directory location for new project')
     parser.add_argument('-e', '--example', dest='example', help='Generate example folder', action='store_true')
     parser.add_argument('-i', '--info', dest='info', help='Very short description of the project')
-    parser.add_argument('-s', '--scm', dest='scm', help='Which source control management you would like initialized', choices=['git'])
+    parser.add_argument('-s', '--scm', dest='scm', help='Which source control management you would like initialized', choices=['git', 'None'])
     parser.add_argument('-t', '--template', dest='template', help="Template name (also used as the name of the template's enclosing folder)", default='Generic')
     parser.add_argument('-v', '--verbose', dest='verbosity', help='Increase verbosity (off/on/firehose)', action='count', default=0)
     args = parser.parse_args()
@@ -377,14 +379,25 @@ if __name__ == "__main__":
         o = genDefaultOptions();
         logging.debug('Defaults: ' + str(o))
         logging.debug('Args: ' + str(args))
+
         o['name'] = args.name # This will either be true, or get a default value that won't reach this point
         o['contributors'] = o['contributors'] if getattr(args, 'contributors') is None else args.contributors
         o['directory'] = o['directory'] if getattr(args, 'directory', o['directory']) is None else args.directory
         o['example'] = args.example # This always gets either true or false, no need for default here
         o['info'] = o['info'] if getattr(args, 'info') is None else args.info
-        o['scm'] = '_stop_' if getattr(args, 'scm', o['scm']) is None else args.scm
+
+        # TODO might need to catch an except here..
+        scmtmp = getattr(args, 'scm', o['scm'])
+        if scmtmp is None:
+            o['scm'] = '_stop_'
+        elif scmtmp == 'None':
+            o['scm'] = '_stop_'
+        else:
+            o['scm'] = args.scm
+
         o['template_name'] = o['template_name'] if getattr(args, 'template') is None else args.template
         logging.info('Args with Defaults: ' + str(o))
+
         # Call Project Creation
         create_project(o)
         
