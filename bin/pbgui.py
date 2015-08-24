@@ -38,13 +38,12 @@ class pbgui():
     def generate(self):
         n = self.nameVar.get()
         self.o['name'] = n
-        logging.warning('NameVar : ' + n)
-        #self.nameVar.set("")
+        logging.debug('NameVar : ' + n)
+        self.nameVar.set("")
 
         t = self.templateVar.get()
         self.o['template_name'] = t
-        logging.warning('TemplateVar : ' + t)
-        #self.templateVar().set("")
+        logging.debug('TemplateVar : ' + t)
 
         cp(self.o)
         #self.main.destroy() #close the window
