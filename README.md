@@ -18,6 +18,12 @@ Check out the help menu.
 python projectBot.py -h
 ```
 ---
+As a user, I want to use a simple gui to make a named project based on a template.
+
+```
+python pbgui.py
+```
+---
 As a user, I want to see what Project-Bot is doing under the covers, because there might be an error, or I am just curious.
 
 Ok you. To see under the covers, add -v flags until you can't stand it! You can pass 0-3 vs, or as many as you want, but I only care up to 2.
