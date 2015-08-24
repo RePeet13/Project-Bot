@@ -4,3 +4,4 @@ bin/*xample*/
 00*-*/
 *config.bot
 *.pyc
+bin/templates/ignore/*
