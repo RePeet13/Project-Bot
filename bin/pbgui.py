@@ -33,7 +33,7 @@ class pbgui():
 
         o0 = tk.OptionMenu(self.frame, self.templateVar, *templates).grid(row=1, column=1)
         
-        b0 = tk.Button(self.frame, text="Generate", command=self.generate()).grid(row=2, column = 2)
+        b0 = tk.Button(self.frame, text="Generate", command=self.generate).grid(row=2, column = 2)
 
     def generate(self):
         n = self.nameVar.get()
