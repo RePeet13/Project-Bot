@@ -51,14 +51,17 @@ def genExampleFolder():
     logging.info('Template List : ' + t)
 
     for d in t: #TODO make this also include any custom folder from config
+        gen_file = 'generic.json' #generic json file name
+        
+        if os.path.isfile(os.path.join(d,gen_file)): 
 
-        o = genDefaultOptions()
+            o = genDefaultOptions()
 
-        logging.debug('Processing template:  ' + d)
-        o['template_name'] = d
-        o['name'] = o['name'] + " (" + d + ")"
-        o['directory'] = os.path.join("./", defExampleFolder)
-        o['scm'] = '_stop_'
+            logging.debug('Processing template:  ' + d)
+            o['template_name'] = d
+            o['name'] = o['name'] + " (" + d + ")"
+            o['directory'] = os.path.join("./", defExampleFolder)
+            o['scm'] = '_stop_'
         
         # Create Example how you would a normal project
         create_project(o)
@@ -390,5 +393,3 @@ if __name__ == "__main__":
         
     ### Reset working directory to original ###
     os.chdir(cwd)
-
-
