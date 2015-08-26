@@ -51,17 +51,14 @@ def genExampleFolder():
     logging.info('Template List : ' + t)
 
     for d in t: #TODO make this also include any custom folder from config
-        gen_file = 'generic.json' #generic json file name
-        
-        if templateCheck(d): 
 
-            o = genDefaultOptions()
+        o = genDefaultOptions()
 
-            logging.debug('Processing template:  ' + d)
-            o['template_name'] = d
-            o['name'] = o['name'] + " (" + d + ")"
-            o['directory'] = os.path.join("./", defExampleFolder)
-            o['scm'] = '_stop_'
+        logging.debug('Processing template:  ' + d)
+        o['template_name'] = d
+        o['name'] = o['name'] + " (" + d + ")"
+        o['directory'] = os.path.join("./", defExampleFolder)
+        o['scm'] = '_stop_'
         
         # Create Example how you would a normal project
         create_project(o)
@@ -106,8 +103,7 @@ def getTemplates():
 
 
 def getBuiltInTemplates():
-    return getProjectDirs(os.path.join(getScriptPath(), 'templates/'))
-
+    return [x for x in getProjectDirs(os.path.join(getScriptPath(), 'templates/')) if templateCheck(x)]
 
 # TODO implement this based on config file etc
 def getCustomTemplates():
