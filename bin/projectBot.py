@@ -15,14 +15,14 @@ def genDefaultOptions():
     script_path = getScriptPath()
     
     o = {'name': 'Example Project', 
-               'template_name': 'Generic',
-               'scm': 'git', 
-               'scm_init': False,
-               'contributors': [cont],
-               'info': 'This is a sample description of a project',
-               'directory': '../',
-               'script_path': script_path + '/',
-               'template_path': os.path.join(script_path, 'templates/')}
+            'template_name' : 'Generic',
+            'scm'           : 'git', 
+            'scm_init'      : False,
+            'contributors'  : [cont],
+            'info'          : 'This is a sample description of a project',
+            'directory'     : '../',
+            'script_path'   : script_path + '/',
+            'template_path' : os.path.join(script_path, 'templates/')}
     return o
     
 
@@ -46,12 +46,12 @@ def genExampleFolder():
 
     os.mkdir(defExampleFolder)
     
+    # TODO switch back to get template list
 #    t = getTemplateList()
     t = getBuiltInTemplates()
     logging.info('Template List : ' + t)
 
     for d in t: #TODO make this also include any custom folder from config
-
         o = genDefaultOptions()
 
         logging.debug('Processing template:  ' + d)
@@ -64,8 +64,9 @@ def genExampleFolder():
         create_project(o)
 
     return o
-    
-   
+
+
+### A simple check for a template. Only looks to see if there exists a generic.json file ###
 def simpleTemplateCheck(dir):
     gen_file = 'generic.json'
     if os.path.isfile(os.path.join(dir, gen_file)):
@@ -73,14 +74,13 @@ def simpleTemplateCheck(dir):
     return False
 
 
-# A simple check for a template. Only looks to see if there exists a generic.json file
+### Wrapper for full template check that simply returns true or false ###
 def templateCheck(dir):
     ftc = fullTemplateCheck(dir)
     return ftc['success']
-  
-  
-# Wrapper for full template check that simply returns true or false
-# Full template check that looks at multiple things as well as validity. Returns overall success as well as some errors that occurred while generating template files.
+
+
+### Full template check that looks at multiple things as well as validity. Returns overall success as well as some errors that occurred while generating template files. ###
 def fullTemplateCheck(dir):
     results = {}
     results['simple'] = simpleTemplateCheck(dir)
@@ -89,14 +89,16 @@ def fullTemplateCheck(dir):
     results['success'] = results['simple']
     
     return results
-  
-  
+
+
+### Get all templates (built in and custom) as a list ###
 def getTemplateList():
     l = getTemplates()
 #    return [item for sublist in l for item in sublist] # TODO ignore empty lists
     return getBuiltInTemplates()
 
 
+### Retrieve all templates { 'builtin' : [], 'custom' : [] } ###
 def getTemplates():
     tmp = {}
     tmp['builtin'] = getBuiltInTemplates()
@@ -105,16 +107,18 @@ def getTemplates():
 def getBuiltInTemplates():
     return [x for x in getProjectDirs(os.path.join(getScriptPath(), 'templates/')) if templateCheck(x)]
 
+
+### Returns all custom templates based on location in config file ###
 # TODO implement this based on config file etc
 def getCustomTemplates():
     return []
 
-### Get Default Examples folder
+### Get Default Examples folder ###
 def getDefaultExamplesFolder():
     return "generatedExamples"
 
 
-### Get Config file values as a map
+### Get Config file values as a map ###
 def parseConfig():
     pass
 
@@ -161,6 +165,7 @@ def getProjectDirs(d):
     return existing_dirs
 
 
+### List comprehension to remove non-numbered directories from list ###
 def weedOutNonNumberedDirs(d):
     logging.debug("Weeding out non-numbered directories")
     logging.debug("Before: \n" + str(d))
@@ -363,6 +368,7 @@ def initGit(d):
     os.chdir(c)
     
 
+### Respond to call from command line ###
 if __name__ == "__main__":
     global cwd
     cwd = os.getcwd()
