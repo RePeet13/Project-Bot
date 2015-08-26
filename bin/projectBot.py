@@ -53,7 +53,7 @@ def genExampleFolder():
     for d in t: #TODO make this also include any custom folder from config
         gen_file = 'generic.json' #generic json file name
         
-        if os.path.isfile(os.path.join(d,gen_file)): 
+        if templateCheck(d): 
 
             o = genDefaultOptions()
 
@@ -69,6 +69,31 @@ def genExampleFolder():
     return o
     
    
+def simpleTemplateCheck(dir):
+    gen_file = 'generic.json'
+    if os.path.isfile(os.path.join(dir, gen_file)):
+        return True
+    return False
+
+
+# A simple check for a template. Only looks to see if there exists a generic.json file
+def templateCheck(dir):
+    ftc = fullTemplateCheck(dir)
+    return ftc['success']
+  
+  
+# Wrapper for full template check that simply returns true or false
+# Full template check that looks at multiple things as well as validity. Returns overall success as well as some errors that occurred while generating template files.
+def fullTemplateCheck(dir):
+    results = {}
+    results['simple'] = simpleTemplateCheck(dir)
+    
+    # TODO implement full checking logic
+    results['success'] = results['simple']
+    
+    return results
+  
+  
 def getTemplateList():
     l = getTemplates()
 #    return [item for sublist in l for item in sublist] # TODO ignore empty lists
