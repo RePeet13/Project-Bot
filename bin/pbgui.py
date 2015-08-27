@@ -21,6 +21,7 @@ class pbgui():
 
         templates = gtl() #get template options
 
+        logging.debug('Templates : ' + str(templates))
         self.nameVar = tk.StringVar()
         self.templateVar = tk.StringVar(self.frame)
         self.templateVar.set(templates[0]) #default value

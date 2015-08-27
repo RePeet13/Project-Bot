@@ -66,22 +66,20 @@ def genExampleFolder():
     return o
 
 
-### A simple check for a template. Only looks to see if there exists a generic.json file ###
-def simpleTemplateCheck(dir):
-    gen_file = 'generic.json'
-    if os.path.isfile(os.path.join(dir, gen_file)):
-        return True
-    return False
-
-
 ### Wrapper for full template check that simply returns true or false ###
 def templateCheck(dir):
+    logging.info('Template check wrapper')
+    c = os.getcwd()
+    os.chdir(os.path.join(getScriptPath(), 'templates/'))
     ftc = fullTemplateCheck(dir)
+    logging.debug('Is success : ' + str(ftc['success']))
+    os.chdir(c)
     return ftc['success']
 
 
 ### Full template check that looks at multiple things as well as validity. Returns overall success as well as some errors that occurred while generating template files. ###
 def fullTemplateCheck(dir):
+    logging.info('Full template check starting : ' + os.path.join(os.getcwd(), dir))
     results = {}
     results['simple'] = simpleTemplateCheck(dir)
     
@@ -89,6 +87,16 @@ def fullTemplateCheck(dir):
     results['success'] = results['simple']
     
     return results
+
+
+### A simple check for a template. Only looks to see if there exists a generic.json file ###
+def simpleTemplateCheck(dir):
+    gen_file = 'generic.json'
+    logging.info('Doing simple check')
+    if os.path.isfile(os.path.join(dir, gen_file)):
+        logging.debug('generic.json found')
+        return True
+    return False
 
 
 ### Get all templates (built in and custom) as a list ###
@@ -363,9 +371,9 @@ def initGit(d):
         
         subprocess.call(['git', 'init'])
         options['scm_init'] = True
+        os.chdir(c)
     else:
         logging.info('Git repo not initialized')
-    os.chdir(c)
     
 
 ### Respond to call from command line ###
