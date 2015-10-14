@@ -7,9 +7,11 @@
     "flags"     : { "short" : "e",
                     "long"  : [{"example":"true"}, {"scm":"None"}]
                   },
-    "extends"   : [
-        "Photography"
-        ],
+                  
+    "extends"   : [{
+            "name" : "Photography",
+            "root" : "photos"
+        }],
     
     "structure" : [
         {
