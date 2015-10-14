@@ -244,13 +244,33 @@ def parseTemplate(options):
         elif s['type'] == 'git' and options['scm'] == 'git':
             logging.debug('Type: Git \n  Location: ' + os.path.join(s['path'], s['name']))
             initGit(os.path.join(s['path'], s['name']))
-            
+    
+
+    logging.info('Looking for template extensions')
+    # TODO add existence check for gen['extends']
+    logging.info('...found')
+    for e in gen['extends']:
+        # TODO null checks for both with gracious error
+        logging.debug('Loading ' + e['name'] + ' template')
+        logging.debug('Subdirectory: ' + e['root'])
+
+        subOptions = loadSubTemplate(e)
+
+
+
     # TODO Confirm this is the right was to handle the scm flag (need to respect the scm flag in the generic files)
     if not options['scm_init'] and not options['scm'] == '_stop_':
         # TODO logic for which scm to init
         initGit(os.path.join(os.getcwd(), "scm"))
     
     
+### Load the options for a subtemplate ###
+def loadSubTemplate(subTemplate):
+    logging.info('Loading subtemplate options')
+    # TODO generate options here with sub template thoughts, such as the changed root, and no project name
+    return {}
+
+
 ### Special Case file generation for readme ###
 # Consider generalizing
 def generateReadme(options, structure):
