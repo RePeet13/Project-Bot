@@ -1,0 +1,114 @@
+{
+    "name"      : "Photography Template",
+    "prefix"    : "ph",
+    "suffix"    : "ph",
+    "slug"      : "photography",
+    "description"   : "Template for photography projects, including the studio edit portion.",
+    "flags"     : { "short" : "e",
+                    "long"  : [{"example":"true"}]
+                  },
+    
+    "structure" : [
+        {
+            "type"  : "folder",
+            "name"  : "gallery",
+            "path"  : ""
+        },
+        {
+            "type"  : "file",
+            "name"  : "readme.md",
+            "path"  : "",
+            "template" : "files/readme.md",
+			"strategy" : "generate"
+        },
+        {   "type"  : "folder",
+            "name"  : "studio",
+            "path"  : ""
+        },
+        {   "type"  : "folder",
+            "name"  : "01-top",
+            "path"  : "studio"
+        },
+        {   "type"  : "folder",
+            "name"  : "02-good",
+            "path"  : "studio"
+        },
+        {   "type"  : "folder",
+            "name"  : "03-funny",
+            "path"  : "studio"
+        },
+        {   "type"  : "folder",
+            "name"  : "04-bad",
+            "path"  : "studio"
+        },
+        {   "type"  : "folder",
+            "name"  : "05-dump",
+            "path"  : "studio"
+        },
+        {   "type"  : "folder",
+            "name"  : "06-panoramas",
+            "path"  : "studio"
+        },
+        {   "type"  : "folder",
+            "name"  : "01",
+            "path"  : "studio/06-panoramas"
+        },
+        {   "type"  : "folder",
+            "name"  : "02",
+            "path"  : "studio/06-panoramas"
+        },
+        {   "type"  : "file",
+            "name"  : "01.jpg",
+            "path"  : "studio/01-top",
+            "template" : "files/src/photos/01.jpg",
+			"strategy" : "copy"
+        },
+        {   "type"  : "file",
+            "name"  : "02.jpg",
+            "path"  : "studio/02-good",
+            "template" : "files/src/photos/02.jpg",
+			"strategy" : "copy"
+        },
+        {   "type"  : "file",
+            "name"  : "03.jpg",
+            "path"  : "studio/03-funny",
+            "template" : "files/src/photos/03.jpg",
+			"strategy" : "copy"
+        },
+        {   "type"  : "file",
+            "name"  : "04.jpg",
+            "path"  : "studio/04-bad",
+            "template" : "files/src/photos/04.jpg",
+			"strategy" : "copy"
+        },
+        {   "type"  : "file",
+            "name"  : "05.jpg",
+            "path"  : "studio/05-dump",
+            "template" : "files/src/photos/05.jpg",
+			"strategy" : "copy"
+        },
+        {   "type"  : "file",
+            "name"  : "06.jpg",
+            "path"  : "studio/06-panoramas/01",
+            "template" : "files/src/photos/06.jpg",
+			"strategy" : "copy"
+        },
+        {   "type"  : "file",
+            "name"  : "07.jpg",
+            "path"  : "studio/06-panoramas/02",
+            "template" : "files/src/photos/07.jpg",
+			"strategy" : "copy"
+        }
+        ],
+    "author"    : "Taylor",
+    "created"   : "2015-07-02",
+    "modified"  : "2015-07-02",
+    "version"   : 1.0,
+    "history"   : [
+        {
+            "version"   : 1.0,
+            "comment"   : "Initial creation of template file",
+            "author"    : "TP",
+            "date"      : "2015-07-02"
+        }]
+}
