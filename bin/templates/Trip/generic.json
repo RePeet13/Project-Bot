@@ -10,7 +10,8 @@
                   
     "extends"   : [{
             "name" : "Photography",
-            "root" : "photos"
+            "root" : "photos",
+            "src"  : "local"
         }],
     
     "structure" : [
