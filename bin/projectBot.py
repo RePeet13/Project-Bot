@@ -159,6 +159,9 @@ def create_project(o):
     os.chdir(options['path'])
     
     parseTemplate(options)
+
+    # TODO change dir then parse template
+
     os.chdir(c)
 
     logging.info('Completed creation of : ' + options['name'] + '\n     Template used : ' + options['template_name'])
@@ -262,6 +265,22 @@ def parseTemplate(options):
     if not options['scm_init'] and not options['scm'] == '_stop_':
         # TODO logic for which scm to init
         initGit(os.path.join(os.getcwd(), "scm"))
+
+    for t in gen['extends']:
+        cwd = os.getcwd()
+
+        # TODO fill out this conditional with input from user
+        continueWithCollision = true
+        try:
+            os.mkdir(t['root'])
+        except OSError as e:
+            pass
+
+        if continueWithCollision:
+            os.chdir(t['root'])
+            
+
+        os.chdir(cwd)
     
     
 ### Load the options for a subtemplate ###
