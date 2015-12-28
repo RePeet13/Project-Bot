@@ -252,13 +252,15 @@ def parseTemplate(options):
     logging.info('Looking for template extensions')
     # TODO add existence check for gen['extends']
     logging.info('...found')
-    for e in gen['extends']:
-        # TODO null checks for both with gracious error
-        logging.debug('Loading ' + e['name'] + ' template')
-        logging.debug('Subdirectory: ' + e['root'])
+    try:
+        for e in gen['extends']:
+            # TODO null checks for both with gracious error
+            logging.debug('Loading ' + e['name'] + ' template')
+            logging.debug('Subdirectory: ' + e['root'])
 
-        subOptions = loadSubTemplate(e)
-
+            subOptions = loadSubTemplate(e)
+    except KeyError as e:
+        pass
 
 
     # TODO Confirm this is the right was to handle the scm flag (need to respect the scm flag in the generic files)
