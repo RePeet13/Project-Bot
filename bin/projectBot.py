@@ -93,10 +93,13 @@ def fullTemplateCheck(dir):
 def simpleTemplateCheck(dir):
     gen_file = 'generic.json'
     logging.info('Doing simple check')
-    if os.path.isfile(os.path.join(dir, gen_file)):
-        logging.debug('generic.json found')
-        return True
-    return False
+
+    if not os.path.isfile(os.path.join(dir, gen_file)):
+        logging.debug('generic.json not found')
+        return False
+
+
+    return True
 
 
 ### Get all templates (built in and custom) as a list ###
@@ -195,40 +198,15 @@ def getScriptPath():
 ### Method that does the high level parsing for templates ###
 def parseTemplate(options):
     logging.info('Parsing template: ' + options['template_name'] + ' for project: ' + options['name'])
+
     global gen
     global val
     
-    try:
-        logging.info('Attempting to load: ' + os.path.join(options['template_path'], options['template_name'], 'generic.json'))
-        gen_file = open(os.path.join(options['template_path'], options['template_name'], 'generic.json'), 'r')
-        gen = json.load(gen_file)
-        gen_file.close()
-    except IOError as e:
-        logging.error("I/O error({0}) loading generic.json: {1}".format(e.errno, e.strerror))
-        sys.exit()
-    except:
-        logging.error("Unexpected error loading generic.json: " + sys.exc_info()[0])
-        raise
-        sys.exit()
-    logging.info('..loaded')
-    
-    # generic.json File loaded and parsed correctly
-    
-    try:
-        logging.info('Attempting to load: ' + os.path.join(options['template_path'], options['template_name'], 'values.json'))
-        val_file = open(os.path.join(options['template_path'], options['template_name'], 'values.json'), 'r')
-        val = json.load(val_file)
-        val_file.close()
-    except IOError as e:
-        logging.error("I/O error({0}) loading values.json: {1}".format(e.errno, e.strerror))
-        sys.exit()
-    except:
-        logging.error("Unexpected error loading values.json: " + sys.exc_info()[0])
-        raise
-        sys.exit()
-    logging.info('..loaded')
+    genPath = os.path.join(options['template_path'], options['template_name'], 'generic.json')
+    gen = loadGenFile(genPath)
 
-    # values.json File loaded and parsed correctly
+    valPath = os.path.join(options['template_path'], options['template_name'], 'values.json')
+    val = loadValFile(valPath)
     
     logging.info('Creating Structure')
     for s in gen['structure']:
@@ -281,10 +259,49 @@ def parseTemplate(options):
         if continueWithCollision:
             os.chdir(t['root'])
             
-
         os.chdir(cwd)
     
-    
+
+### Load generic file
+def loadGenFile(tp):
+    gen = null
+    try:
+        logging.info('Attempting to load: ' + tp)
+        gen_file = open(tp, 'r')
+        gen = json.load(gen_file)
+        gen_file.close()
+    except IOError as e:
+        logging.error('I/O error({0}) loading generic.json: {1}'.format(e.errno, e.strerror))
+        sys.exit()
+    except:
+        logging.error('Unexpected error loading generic.json: ' + sys.exc_info()[0])
+        raise
+        sys.exit()
+    logging.info('..loaded')
+    # generic.json File loaded and parsed correctly
+    return gen
+
+
+### load values file
+def loadValFile(tp):
+    val = null
+    try:
+        logging.info('Attempting to load: ' + tp)
+        val_file = open(tp, 'r')
+        val = json.load(val_file)
+        val_file.close()
+    except IOError as e:
+        logging.error('I/O error({0}) loading values.json: {1}'.format(e.errno, e.strerror))
+        sys.exit()
+    except:
+        logging.error('Unexpected error loading values.json: ' + sys.exc_info()[0])
+        raise
+        sys.exit()
+    logging.info('..loaded')
+    # values.json File loaded and parsed correctly
+    return val
+
+
 ### Load the options for a subtemplate ###
 def loadSubTemplate(subTemplate):
     logging.info('Loading subtemplate options')
@@ -301,10 +318,10 @@ def generateReadme(options, structure):
         logging.info('Attempting to load: ' + os.path.join(options['template_path'], options['template_name'], structure['template']))
         src_file = open(os.path.join(options['template_path'], options['template_name'], structure['template']), 'r')
     except IOError as e:
-        logging.error("I/O error({0}) loading readme template: {1}".format(e.errno, e.strerror))
+        logging.error('I/O error({0}) loading readme template: {1}'.format(e.errno, e.strerror))
         sys.exit()
     except:
-        logging.error("Unexpected error loading readme template: " + sys.exc_info()[0])
+        logging.error('Unexpected error loading readme template: ' + sys.exc_info()[0])
         sys.exit()
         raise
     logging.info('..loaded')
@@ -315,10 +332,10 @@ def generateReadme(options, structure):
         logging.info('Attempting to load: ' + os.path.join(structure['path'], structure['name']))
         temp_file = open(os.path.join(structure['name']), 'w')
     except IOError as e:
-        logging.error("I/O error({0}) creating readme: {1}".format(e.errno, e.strerror))
+        logging.error('I/O error({0}) creating readme: {1}'.format(e.errno, e.strerror))
         sys.exit()
     except:
-        logging.error("Unexpected error creating readme: " + sys.exc_info()[0])
+        logging.error('Unexpected error creating readme: ' + sys.exc_info()[0])
         sys.exit()
         raise
     logging.info('..loaded')
@@ -357,7 +374,7 @@ def readmeSub(matchObj):
         else:
             return str(options[vr.lower()])
 
-    elif scope == "a": # Array based value
+    elif scope == 'a': # Array based value
         return readmeArraySub(scopeList[vr[0]], vr)
     
     elif scope not in scopeList:
