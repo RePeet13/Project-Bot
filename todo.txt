@@ -5,4 +5,4 @@ return json in simple check (not the one thats supposed to return true/false)
 catch exceptions at parsing time to gain insight to where the problem was
 have a log file with date in name (start with 'tmp.log' and rename at end, put timestamp as first line, use as filename, drop into project dir)
 have logging method that takes in level and message and logs to both console and file
-create flask app that hosts project directory (should support html, md, and hotplugging changes)
+create flask app that hosts project directories (or just one) (should support html, md, and hotplugging changes)
