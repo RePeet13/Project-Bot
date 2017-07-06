@@ -44,7 +44,7 @@ def genExampleFolder():
             # TODO improve this to check for the exact folder, and delete if present
             if (d.lower().find("generatedExamples".lower()) >= 0):
                 # logging.info('Removing old example folder: ' + d)
-                logThis('info', 'Removing old example folder: ' + d)
+                logThis('info', 'Removing old example folder: ' + str(d))
                 shutil.rmtree(d)
 
     os.mkdir(defExampleFolder)
@@ -53,13 +53,13 @@ def genExampleFolder():
 #    t = getTemplateList()
     t = getBuiltInTemplates()
     # logging.info('Template List : ' + t)
-    logThis('info', 'Template List : ' + t)
+    logThis('info', 'Template List : ' + str(t))
 
     for d in t: #TODO make this also include any custom folder from config
         o = genDefaultOptions()
 
         # logging.debug('Processing template:  ' + d)
-        logThis('debug', 'Processing template:  ' + d)
+        logThis('debug', 'Processing template:  ' + str(d))
         o['template_name'] = d
         o['name'] = o['name'] + " (" + d + ")"
         o['directory'] = os.path.join("./", defExampleFolder)
@@ -87,7 +87,7 @@ def templateCheck(dir):
 ### Full template check that looks at multiple things as well as validity. Returns overall success as well as some errors that occurred while generating template files. ###
 def fullTemplateCheck(dir):
     # logging.info('Full template check starting : ' + os.path.join(os.getcwd(), dir))
-    logThis('info', 'Full template check starting : ' + os.path.join(os.getcwd(), dir))
+    logThis('info', 'Full template check starting : ' + str(os.path.join(os.getcwd(), dir)))
     results = {}
     results['simple'] = simpleTemplateCheck(dir)
 
@@ -155,7 +155,7 @@ def create_project(o):
     #     options['name'] = raw_input("Project name, sir: ")
 
     # logging.info('Creating project: ' + options['name'] + "\n   CWD: " + os.getcwd())
-    logThis('info', 'Creating project: ' + options['name'] + "\n   CWD: " + os.getcwd())
+    logThis('info', 'Creating project: ' + str(options['name']) + "\n   CWD: " + str(os.getcwd()))
 
     existing_dirs = getProjectDirs(options['directory'])
     existing_dirs = weedOutNonNumberedDirs(existing_dirs)
@@ -170,7 +170,7 @@ def create_project(o):
 
     options['path'] = os.path.join(options['directory'], (str(num).zfill(zeros) + "-" + options['name']))
     # logging.info("Making dir: " + options['path'])
-    logThis('info', 'Making dir: ' + options['path'])
+    logThis('info', 'Making dir: ' + str(options['path']))
     os.mkdir(options['path'])
     os.chdir(options['path'])
 
@@ -181,7 +181,7 @@ def create_project(o):
     os.chdir(c)
 
     # logging.info('Completed creation of : ' + options['name'] + '\n     Template used : ' + options['template_name'])
-    logThis('info', 'Completed creation of : ' + options['name'] + '\n     Template used : ' + options['template_name'])
+    logThis('info', 'Completed creation of : ' + str(options['name']) + '\n     Template used : ' + str(options['template_name']))
 
 
 ### Returns list of directories within the given directory ###
@@ -217,7 +217,7 @@ def getScriptPath():
 ### Method that does the high level parsing for templates ###
 def parseTemplate(options):
     # logging.info('Parsing template: ' + options['template_name'] + ' for project: ' + options['name'])
-    logThis('info', 'Parsing template: ' + options['template_name'] + ' for project: ' + options['name'])
+    logThis('info', 'Parsing template: ' + str(options['template_name']) + ' for project: ' + str(options['name']))
 
     global gen
     global val
@@ -231,14 +231,14 @@ def parseTemplate(options):
     logging.info('Creating Structure')
     for s in gen['structure']:
         # logging.debug('Current Working Directory: ' + os.getcwd())
-        logThis('debug', 'Current Working Directory: ' + os.getcwd())
+        logThis('debug', 'Current Working Directory: ' + str(os.getcwd()))
         if s['type'] == 'folder':
             # logging.debug('Type: Folder \n  Location: ' + os.path.join(s['path'], s['name']))
-            logThis('debug', 'Type: Folder \n  Location: ' + os.path.join(s['path'], s['name']))
+            logThis('debug', 'Type: Folder \n  Location: ' + str(os.path.join(s['path'], s['name'])))
             os.mkdir(os.path.join(s['path'], s['name']))
         elif s['type'] == 'file':
             # logging.debug('Type: ' + s['type'] + ', Strategy: ' + s['strategy'] + ', Template: ' + s['template'])
-            logThis('debug', 'Type: ' + s['type'] + ', Strategy: ' + s['strategy'] + ', Template: ' + s['template'])
+            logThis('debug', 'Type: ' + str(s['type']) + ', Strategy: ' + str(s['strategy']) + ', Template: ' + str(s['template']))
             if s['strategy'] == 'generate':
                 if s['name'] == 'readme.md':
                     generateReadme(options, s)
@@ -247,7 +247,7 @@ def parseTemplate(options):
                 # TODO catch error here and handle gracefully
         elif s['type'] == 'git' and options['scm'] == 'git':
             # logging.debug('Type: Git \n  Location: ' + os.path.join(s['path'], s['name']))
-            logThis('debug', 'Type: Git \n  Location: ' + os.path.join(s['path'], s['name']))
+            logThis('debug', 'Type: Git \n  Location: ' + str(os.path.join(s['path'], s['name'])))
             initGit(os.path.join(s['path'], s['name']))
 
 
@@ -260,9 +260,9 @@ def parseTemplate(options):
         for e in gen['extends']:
             # TODO null checks for both with gracious error
             # logging.debug('Loading ' + e['name'] + ' template')
-            logThis('debug', 'Loading ' + e['name'] + ' template')
+            logThis('debug', 'Loading ' + str(e['name']) + ' template')
             # logging.debug('Subdirectory: ' + e['root'])
-            logThis('debug', 'Subdirectory: ' + e['root'])
+            logThis('debug', 'Subdirectory: ' + str(e['root']))
 
             subOptions = loadSubTemplate(e)
     except KeyError as e:
@@ -295,7 +295,7 @@ def loadGenFile(tp):
     gen = null
     try:
         # logging.info('Attempting to load: ' + tp)
-        logThis('info', 'Attempting to load: ' + tp)
+        logThis('info', 'Attempting to load: ' + str(tp))
         gen_file = open(tp, 'r')
         gen = json.load(gen_file)
         gen_file.close()
@@ -305,7 +305,7 @@ def loadGenFile(tp):
         sys.exit()
     except:
         # logging.error('Unexpected error loading generic.json: ' + sys.exc_info()[0])
-        logThis('error', 'Unexpected error loading generic.json: ' + sys.exc_info()[0])
+        logThis('error', 'Unexpected error loading generic.json: ' + str(sys.exc_info()[0]))
         raise
         sys.exit()
     # logging.info('..loaded')
@@ -319,7 +319,7 @@ def loadValFile(tp):
     val = null
     try:
         # logging.info('Attempting to load: ' + tp)
-        logThis('info', 'Attempting to load: ' + tp)
+        logThis('info', 'Attempting to load: ' + str(tp))
         val_file = open(tp, 'r')
         val = json.load(val_file)
         val_file.close()
@@ -329,7 +329,7 @@ def loadValFile(tp):
         sys.exit()
     except:
         # logging.error('Unexpected error loading values.json: ' + sys.exc_info()[0])
-        logThis('error', 'Unexpected error loading values.json: ' + sys.exc_info()[0])
+        logThis('error', 'Unexpected error loading values.json: ' + str(sys.exc_info()[0]))
         raise
         sys.exit()
     # logging.info('..loaded')
@@ -355,7 +355,7 @@ def generateReadme(options, structure):
     # Try to load src file
     try:
         # logging.info('Attempting to load: ' + os.path.join(options['template_path'], options['template_name'], structure['template']))
-        logThis('info', 'Attempting to load: ' + os.path.join(options['template_path'], options['template_name'], structure['template']))
+        logThis('info', 'Attempting to load: ' + str(os.path.join(options['template_path'], options['template_name'], structure['template'])))
         src_file = open(os.path.join(options['template_path'], options['template_name'], structure['template']), 'r')
     except IOError as e:
         # logging.error('I/O error({0}) loading readme template: {1}'.format(e.errno, e.strerror))
@@ -363,7 +363,7 @@ def generateReadme(options, structure):
         sys.exit()
     except:
         # logging.error('Unexpected error loading readme template: ' + sys.exc_info()[0])
-        logThis('error', 'Unexpected error loading readme template: ' + sys.exc_info()[0])
+        logThis('error', 'Unexpected error loading readme template: ' + str(sys.exc_info()[0]))
         sys.exit()
         raise
     # logging.info('..loaded')
@@ -373,7 +373,7 @@ def generateReadme(options, structure):
     # Open destination file for writing!
     try:
         # logging.info('Attempting to load: ' + os.path.join(structure['path'], structure['name']))
-        logThis('info', 'Attempting to load: ' + os.path.join(structure['path'], structure['name']))
+        logThis('info', 'Attempting to load: ' + str(os.path.join(structure['path'], structure['name'])))
         temp_file = open(os.path.join(structure['name']), 'w')
     except IOError as e:
         # logging.error('I/O error({0}) creating readme: {1}'.format(e.errno, e.strerror))
@@ -381,7 +381,7 @@ def generateReadme(options, structure):
         sys.exit()
     except:
         # logging.error('Unexpected error creating readme: ' + sys.exc_info()[0])
-        logThis('error', 'Unexpected error creating readme: ' + sys.exc_info()[0])
+        logThis('error', 'Unexpected error creating readme: ' + str(sys.exc_info()[0]))
         sys.exit()
         raise
     logging.info('..loaded')
@@ -415,7 +415,7 @@ def readmeSub(matchObj):
     scopeList = {'i' : options, 'v' : val, 'l' : gen, 't' : gen}
 
     # logging.debug('Substituting variable: ' + vr + ' - Scope: ' + pat[1])
-    logThis('debug', 'Substituting variable: ' + vr + ' - Scope: ' + pat[1])
+    logThis('debug', 'Substituting variable: ' + str(vr) + ' - Scope: ' + str(pat[1]))
 
     # Special cases can return sooner
     if scope == 'i': # Input Value
@@ -429,7 +429,7 @@ def readmeSub(matchObj):
 
     elif scope not in scopeList:
         # logging.warning('Scope was not recognized: ' + scope)
-        logThis('warning', 'Scope was not recognized: ' + scope)
+        logThis('warning', 'Scope was not recognized: ' + str(scope))
         return pat
 
     # General purpose case
@@ -444,7 +444,7 @@ def readmeArraySub(file, vr):
     # Key for the array from the data file
     key = vr[1:space]
     # logging.debug('Key is: ' + key)
-    logThis('debug', 'Key is: ' + key)
+    logThis('debug', 'Key is: ' + str(key))
     # Virgin structure of the line so each entry of data can start fresh
     struct = vr[space:]
     out = ''
@@ -462,9 +462,9 @@ def readmeArraySub(file, vr):
             la = tmp.find('}}')
 
             # logging.debug('Current Source: ' + tmp + ', Fr: ' + str(fr) + ', La: ' + str(la))
-            logThis('debug', 'Current Source: ' + tmp + ', Fr: ' + str(fr) + ', La: ' + str(la))
+            logThis('debug', 'Current Source: ' + str(tmp) + ', Fr: ' + str(fr) + ', La: ' + str(la)) # TODO refactor to string formatter
             # logging.debug('Replacing: ' + tmp[fr+2:la])
-            logThis('debug', 'Replacing: ' + tmp[fr+2:la])
+            logThis('debug', 'Replacing: ' + str(tmp[fr+2:la]))
 
             # the offending line with the possible errors \/
             tmp = tmp[0:fr] + str(a[tmp[fr+2:la].lower()]) + tmp[la+2:]
@@ -472,7 +472,7 @@ def readmeArraySub(file, vr):
     return out
 
 ### Instance to generalize logging to different methods
-logThis = {
+logThisStruct = {
     'error' : logging.error,
     'warning' : logging.warning,
     'info' : logging.info,
@@ -481,7 +481,7 @@ logThis = {
 
 ### Generalization of logging so it can go to several output methods
 def logThis(level, message):
-    logThis[level.lower()](message)
+    logThisStruct[level.lower()](message)
 
 
 ### Initialize a bare repo at the given directory ###
@@ -495,7 +495,7 @@ def initGit(d):
         os.mkdir(d)
         os.chdir(d)
         # logging.info('Initializing git repo at: ' + d)
-        logThis('info', 'Initializing git repo at: ' + d)
+        logThis('info', 'Initializing git repo at: ' + str(d))
 
         subprocess.call(['git', 'init'])
         options['scm_init'] = True
