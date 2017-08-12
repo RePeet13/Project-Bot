@@ -5,3 +5,5 @@ bin/*xample*/
 *config.bot
 *.pyc
 bin/templates/ignore/*
+*.vscode
+
