@@ -1,4 +1,4 @@
-import os, sys, argparse, json, sys, re, shutil, datetime, logging, subprocess
+import  argparse, copy, datetime, json, logging, os, pprint, re, shutil, subprocess, sys
 from collections import namedtuple
 
 ### Global Project defaults ###
@@ -174,9 +174,7 @@ def create_project(o):
     os.mkdir(options['path'])
     os.chdir(options['path'])
 
-    parseTemplate(options)
-
-    # TODO change dir then parse template
+    parseTemplate(options, True, options['name']) # True indicates Top Level Template (not sub template)
 
     os.chdir(c)
 
@@ -215,18 +213,28 @@ def getScriptPath():
 
 
 ### Method that does the high level parsing for templates ###
-def parseTemplate(options):
+def parseTemplate(options, topLevelTemplate, subTemplateName):
     # logging.info('Parsing template: ' + options['template_name'] + ' for project: ' + options['name'])
-    logThis('info', 'Parsing template: ' + str(options['template_name']) + ' for project: ' + str(options['name']))
+    logThis('info', 'Parsing template: {0} (Top Level: {1}) for project: {2}'.format(str(options['template_name']), str(topLevelTemplate), str(options['name'])))
 
-    global gen
-    global val
+    options_root = {}
+    if topLevelTemplate:
+        options_root = options
+    elif 'sub_template_options' in options and subTemplateName in options['sub_template_options']:
+        options_root = options['sub_template_options'][subTemplateName]
 
-    genPath = os.path.join(options['template_path'], options['template_name'], 'generic.json')
-    gen = loadGenFile(genPath)
+    options_root['template_info'] = {}
 
-    valPath = os.path.join(options['template_path'], options['template_name'], 'values.json')
-    val = loadValFile(valPath)
+    genPath = os.path.join(options_root['template_path'], options_root['template_name'], 'generic.json')
+    valPath = os.path.join(options_root['template_path'], options_root['template_name'], 'values.json')
+
+    gen = loadFileToJson(genPath)
+    options_root['template_info']['gen'] = gen
+
+    val = loadFileToJson(valPath)
+    options_root['template_info']['val'] = val
+
+    logThis('debug', 'Full Options:\n' + pprint.pformat(options))
 
     logging.info('Creating Structure')
     for s in gen['structure']:
@@ -241,9 +249,9 @@ def parseTemplate(options):
             logThis('debug', 'Type: ' + str(s['type']) + ', Strategy: ' + str(s['strategy']) + ', Template: ' + str(s['template']))
             if s['strategy'] == 'generate':
                 if s['name'] == 'readme.md':
-                    generateReadme(options, s)
+                    generateReadme(options_root, s) # TODO check this
             elif s['strategy'] == 'copy':
-                shutil.copy(os.path.join(options['template_path'], options['template_name'], s['template']), os.path.join(s['path'], s['name']))
+                shutil.copy(os.path.join(options_root['template_path'], options_root['template_name'], s['template']), os.path.join(s['path'], s['name']))
                 # TODO catch error here and handle gracefully
         elif s['type'] == 'git' and options['scm'] == 'git':
             # logging.debug('Type: Git \n  Location: ' + os.path.join(s['path'], s['name']))
@@ -251,92 +259,122 @@ def parseTemplate(options):
             initGit(os.path.join(s['path'], s['name']))
 
 
+    # TODO Confirm this is the right way to handle the scm flag (need to respect the scm flag in the generic files)
+    # TODO need to look at nesting git folder (i think we shouldn't)
+    if not options_root['scm_init'] and not options['scm'] == '_stop_':
+        # TODO logic for which scm to init
+        initGit(os.path.join(os.getcwd(), "scm"))
+
     # logging.info('Looking for template extensions')
     logThis('info', 'Looking for template extensions')
-    # TODO add existence check for gen['extends']
-    # logging.info('...found')
-    logThis('info', '...found')
-    try:
-        for e in gen['extends']:
+    logThis('debug', 'Generic File Json: \n{0}'.format(str(gen)))
+    if 'extensions' in gen:
+        logThis('info', '...found')
+        for e in gen['extensions']:
             # TODO null checks for both with gracious error
             # logging.debug('Loading ' + e['name'] + ' template')
             logThis('debug', 'Loading ' + str(e['name']) + ' template')
             # logging.debug('Subdirectory: ' + e['root'])
             logThis('debug', 'Subdirectory: ' + str(e['root']))
+            logThis('debug', 'TemplateOptions:\n' + pprint.pformat(options_root))
+            o = copy.deepcopy(options_root)
+            # for keys in options_root.keys():
+            #     o[keys] = options_root[keys]
+            o['path'] = os.path.join(options_root['path'], e['root'])
+            o['template_name'] = e['name']
+            o['name'] = e['root']
+            
+            if 'sub_template_options' not in options:
+                options['sub_template_options'] = {}
+            options['sub_template_options'][o['name']] = o
+            logThis('debug', 'Sub Template Options:\n' + pprint.pformat(o))
 
-            subOptions = loadSubTemplate(e)
-    except KeyError as e:
-        pass
+            cd = os.getcwd()
+            logThis('debug', 'CWD is: ' + cd)
+            logThis('debug', 'Making directory: ' + e['root'])
+            os.mkdir(e['root'])
+            os.chdir(e['root'])
+
+            parseTemplate(options, False, o['name'])
+
+            os.chdir(cd)
+            # subOptions = loadSubTemplate(e)
+    else:
+        logThis('info', '...not found')
 
 
-    # TODO Confirm this is the right was to handle the scm flag (need to respect the scm flag in the generic files)
-    if not options['scm_init'] and not options['scm'] == '_stop_':
-        # TODO logic for which scm to init
-        initGit(os.path.join(os.getcwd(), "scm"))
 
-    for t in gen['extends']:
-        cwd = os.getcwd()
-
-        # TODO fill out this conditional with input from user
-        continueWithCollision = true
-        try:
-            os.mkdir(t['root'])
-        except OSError as e:
-            pass
-
-        if continueWithCollision:
-            os.chdir(t['root'])
-
-        os.chdir(cwd)
-
-
-### Load generic file
-def loadGenFile(tp):
-    gen = null
+### Load file to Json
+def loadFileToJson(tp):
+    j = None
     try:
         # logging.info('Attempting to load: ' + tp)
         logThis('info', 'Attempting to load: ' + str(tp))
-        gen_file = open(tp, 'r')
-        gen = json.load(gen_file)
-        gen_file.close()
+        f = open(tp, 'r')
+        j = json.load(f)
+        f.close()
     except IOError as e:
         # logging.error('I/O error({0}) loading generic.json: {1}'.format(e.errno, e.strerror))
-        logThis('error', 'I/O error({0}) loading generic.json: {1}'.format(e.errno, e.strerror))
+        logThis('error', 'I/O error({0}) loading file: \n\t{2}\n\n{1}'.format(e.errno, e.strerror, tp))
         sys.exit()
     except:
         # logging.error('Unexpected error loading generic.json: ' + sys.exc_info()[0])
-        logThis('error', 'Unexpected error loading generic.json: ' + str(sys.exc_info()[0]))
+        logThis('error', 'Unexpected error loading file: \n\t{0}\n\n{1}'.format(tp, str(sys.exc_info()[0])))
         raise
         sys.exit()
     # logging.info('..loaded')
     logThis('info', '..loaded')
     # generic.json File loaded and parsed correctly
-    return gen
+    return j
+
+
+### Load generic file
+# def loadGenFile(tp):
+#     gen = None
+#     try:
+#         # logging.info('Attempting to load: ' + tp)
+#         logThis('info', 'Attempting to load: ' + str(tp))
+#         gen_file = open(tp, 'r')
+#         gen = json.load(gen_file)
+#         gen_file.close()
+#     except IOError as e:
+#         # logging.error('I/O error({0}) loading generic.json: {1}'.format(e.errno, e.strerror))
+#         logThis('error', 'I/O error({0}) loading generic.json: {1}'.format(e.errno, e.strerror))
+#         sys.exit()
+#     except:
+#         # logging.error('Unexpected error loading generic.json: ' + sys.exc_info()[0])
+#         logThis('error', 'Unexpected error loading generic.json: ' + str(sys.exc_info()[0]))
+#         raise
+#         sys.exit()
+#     # logging.info('..loaded')
+#     logThis('info', '..loaded')
+#     # generic.json File loaded and parsed correctly
+#     return gen
 
 
 ### load values file
-def loadValFile(tp):
-    val = null
-    try:
-        # logging.info('Attempting to load: ' + tp)
-        logThis('info', 'Attempting to load: ' + str(tp))
-        val_file = open(tp, 'r')
-        val = json.load(val_file)
-        val_file.close()
-    except IOError as e:
-        # logging.error('I/O error({0}) loading values.json: {1}'.format(e.errno, e.strerror))
-        logThis('error', 'I/O error({0}) loading values.json: {1}'.format(e.errno, e.strerror))
-        sys.exit()
-    except:
-        # logging.error('Unexpected error loading values.json: ' + sys.exc_info()[0])
-        logThis('error', 'Unexpected error loading values.json: ' + str(sys.exc_info()[0]))
-        raise
-        sys.exit()
-    # logging.info('..loaded')
-    logThis('info', '..loaded')
-
-    # values.json File loaded and parsed correctly
-    return val
+# def loadValFile(tp):
+#     val = None
+#     try:
+#         # logging.info('Attempting to load: ' + tp)
+#         logThis('info', 'Attempting to load: ' + str(tp))
+#         val_file = open(tp, 'r')
+#         val = json.load(val_file)
+#         val_file.close()
+#     except IOError as e:
+#         # logging.error('I/O error({0}) loading values.json: {1}'.format(e.errno, e.strerror))
+#         logThis('error', 'I/O error({0}) loading values.json: {1}'.format(e.errno, e.strerror))
+#         sys.exit()
+#     except:
+#         # logging.error('Unexpected error loading values.json: ' + sys.exc_info()[0])
+#         logThis('error', 'Unexpected error loading values.json: ' + str(sys.exc_info()[0]))
+#         raise
+#         sys.exit()
+#     # logging.info('..loaded')
+#     logThis('info', '..loaded')
+#
+#     # values.json File loaded and parsed correctly
+#     return val
 
 
 ### Load the options for a subtemplate ###
@@ -344,6 +382,21 @@ def loadSubTemplate(subTemplate):
     # logging.info('Loading subtemplate options')
     logThis('info', 'Loading subtemplate options')
     # TODO generate options here with sub template thoughts, such as the changed root, and no project name
+
+    #     cwd = os.getcwd()
+    #
+    #     # TODO fill out this conditional with input from user
+    #     continueWithCollision = true
+    #     try:
+    #         os.mkdir(t['root'])
+    #     except OSError as e:
+    #         pass
+    #
+    #     if continueWithCollision:
+    #         os.chdir(t['root'])
+    #         # TODO finish implementing included templates
+    #
+    #     os.chdir(cwd)
     return {}
 
 
@@ -412,7 +465,12 @@ def readmeSub(matchObj):
     scope = pat[1]
 
     # Use dictionary to relate the scope and the src the data should come from
-    scopeList = {'i' : options, 'v' : val, 'l' : gen, 't' : gen}
+    scopeList = {
+        'i' : options,
+        'v' : options['template_info']['val'],
+        'l' : options['template_info']['gen'],
+        't' : options['template_info']['gen']
+    }
 
     # logging.debug('Substituting variable: ' + vr + ' - Scope: ' + pat[1])
     logThis('debug', 'Substituting variable: ' + str(vr) + ' - Scope: ' + str(pat[1]))
@@ -481,7 +539,9 @@ logThisStruct = {
 
 ### Generalization of logging so it can go to several output methods
 def logThis(level, message):
-    logThisStruct[level.lower()](message)
+    l = level.lower()
+    l = getattr(logThisStruct, l, 'debug')
+    logThisStruct[l](message)
 
 
 ### Initialize a bare repo at the given directory ###
