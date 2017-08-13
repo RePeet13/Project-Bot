@@ -1,0 +1,147 @@
+{
+    "name"      : "Wedding Stylist Template",
+    "prefix"    : "ws",
+    "suffix"    : "ws",
+    "slug"      : "stylist",
+    "description"   : "Template for planning, coordinating, and later polishing the results (photos) of a wedding from the stylist's point of view.",
+    "flags"     : { "short" : "e",
+                    "long"  : [{"example":"true"}, {"scm":"None"}]
+                  },
+
+    "extensions"   : [{
+            "name" : "Photography",
+            "root" : "Finished Photos",
+            "src"  : "system"
+        },
+        {
+            "name" : "Trip",
+            "root" : "Trips,Venue Consult",
+            "src"  : "system"
+        },
+        {
+            "name" : "Trip",
+            "root" : "Trips,Wedding",
+            "src"  : "system"
+        }
+    
+    ],
+
+    "structure" : [
+        {
+            "type" : "folder",
+            "name" : "Planning",
+            "path" : ""
+        },
+        {
+            "type"  : "folder",
+            "name"  : "Trips",
+            "path"  : ""
+        },
+        {
+            "type"  : "folder",
+            "name"  : "Design",
+            "path"  : ""
+        },
+
+
+        {
+            "type"  : "folder",
+            "name"  : "docs",
+            "path"  : "Planning"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "permits",
+            "path"  : "Planning/Docs"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "maps",
+            "path"  : "Planning/Docs"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "receipts",
+            "path"  : "Planning/Docs"
+        },
+        {
+            "type"  : "file",
+            "name"  : "src.md",
+            "path"  : "Planning",
+            "template" : "files/src.md",
+            "strategy" : "copy"
+        },
+        {
+            "type"  : "file",
+            "name"  : "itinerary.md",
+            "path"  : "Planning",
+            "template" : "files/itinerary.md",
+            "strategy" : "copy"
+        },
+
+
+        {
+            "type"  : "folder",
+            "name"  : "Venue Consult",
+            "path"  : "Trips"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "Wedding",
+            "path"  : "Trips"
+        },
+
+
+        {
+            "type"  : "folder",
+            "name"  : "Colors",
+            "path"  : "Design"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "Fonts",
+            "path"  : "Design"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "Printables",
+            "path"  : "Design"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "Invitation",
+            "path"  : "Design/Printables"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "Menu",
+            "path"  : "Design/Printables"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "Program",
+            "path"  : "Design/Printables"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "Save The Date",
+            "path"  : "Design/Printables"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "Thank You Card",
+            "path"  : "Design/Printables"
+        }
+    ],
+    "author"    : "Taylor",
+    "created"   : "2017-08-12",
+    "modified"  : "2017-08-12",
+    "version"   : 1.0,
+    "history"   : [
+        {
+            "version"   : 1.0,
+            "comment"   : "Initial creation of template file",
+            "author"    : "TP",
+            "date"      : "2017-08-12"
+        }]
+}

@@ -1,0 +1,69 @@
+{
+    "name"      : "Trip Template",
+    "prefix"    : "tt",
+    "suffix"    : "tt",
+    "slug"      : "trip",
+    "description"   : "Template for planning, coordinating, and later polishing the results (photos).",
+    "flags"     : { "short" : "e",
+                    "long"  : [{"example":"true"}, {"scm":"None"}]
+                  },
+
+    "extensions"   : [{
+            "name" : "Photography",
+            "root" : "photos",
+            "src"  : "local"
+        }],
+
+    "structure" : [
+        {
+            "type" : "folder",
+            "name" : "planning",
+            "path" : ""
+        },
+        {
+            "type"  : "folder",
+            "name"  : "docs",
+            "path"  : "planning"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "permits",
+            "path"  : "planning/docs"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "maps",
+            "path"  : "planning/docs"
+        },
+        {
+            "type"  : "folder",
+            "name"  : "receipts",
+            "path"  : "planning/docs"
+        },
+        {
+            "type"  : "file",
+            "name"  : "src.md",
+            "path"  : "planning",
+            "template" : "files/src.md",
+            "strategy" : "copy"
+        },
+        {
+            "type"  : "file",
+            "name"  : "itinerary.md",
+            "path"  : "planning",
+            "template" : "files/itinerary.md",
+            "strategy" : "copy"
+        }
+        ],
+    "author"    : "Taylor",
+    "created"   : "2015-08-23",
+    "modified"  : "2015-08-23",
+    "version"   : 1.0,
+    "history"   : [
+        {
+            "version"   : 1.0,
+            "comment"   : "Initial creation of template file",
+            "author"    : "TP",
+            "date"      : "2015-08-23"
+        }]
+}
