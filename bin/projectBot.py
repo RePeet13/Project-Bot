@@ -1,4 +1,4 @@
-import  argparse, copy, datetime, json, logging, os, pprint, re, shutil, subprocess, sys
+import  argparse, copy, datetime, errno, json, logging, os, pprint, re, shutil, subprocess, sys
 from collections import namedtuple
 
 ### Global Project defaults ###
@@ -31,27 +31,26 @@ def genExampleFolder():
     # This is where the example folder is generated
     logThis('info', 'Generating Example Folders')
 
-    # TODO consider allowing the generation of just one template (nondestructive to entire example folder) for when people have tons of templates
-
     defExampleFolder = getDefaultExamplesFolder()
 
     # Remove old example folder
     existing_dirs = getProjectDirs("./")
     if (len(existing_dirs) > 0):
         for d in existing_dirs:
-            # TODO improve this to check for the exact folder, and delete if present
-            if (d.lower().find("generatedExamples".lower()) >= 0):
+            if (d == defExampleFolder):
                 logThis('info', 'Removing old example folder: ' + str(d))
                 shutil.rmtree(d)
 
-    os.mkdir(defExampleFolder)
+    mkDirDashP(defExampleFolder)
 
-    # TODO switch back to get template list
-#    t = getTemplateList()
-    t = getBuiltInTemplates()
-    logThis('info', 'Template List : ' + str(t))
+    t = getTemplateList()
+    logThis('info', 'Template List: ' + str(t))
 
-    for d in t: #TODO make this also include any custom folder from config
+    if t.count < 1:
+        # Should require templates?
+        logThis('error', 'Expected non-zero templates')
+        sys.exit()
+    for d in t:
         o = genDefaultOptions()
 
         logThis('debug', 'Processing template:  ' + str(d))
@@ -91,8 +90,8 @@ def fullTemplateCheck(dir):
 
 ### A simple check for a template. Only looks to see if there exists a generic.json file ###
 def simpleTemplateCheck(dir):
+    logThis('info', 'Doing simple check: ' + str(dir))
     gen_file = 'generic.json'
-    logThis('info', 'Doing simple check')
 
     if not os.path.isfile(os.path.join(dir, gen_file)):
         logThis('debug', 'generic.json not found')
@@ -104,19 +103,28 @@ def simpleTemplateCheck(dir):
 
 ### Get all templates (built in and custom) as a list ###
 def getTemplateList():
+    temp_list = []
     l = getTemplates()
-#    return [item for sublist in l for item in sublist] # TODO ignore empty lists
-    return getBuiltInTemplates()
+
+    logThis('debug', 'Retrieved templates\n' + pprint.pformat(l))
+    if 'builtin' in l:
+        temp_list.extend(l['builtin'])
+    return temp_list
 
 
 ### Retrieve all templates { 'builtin' : [], 'custom' : [] } ###
 def getTemplates():
     tmp = {}
     tmp['builtin'] = getBuiltInTemplates()
+    # TODO add custom templates folder
+    return tmp
 
 
 def getBuiltInTemplates():
-    return [x for x in getProjectDirs(os.path.join(getScriptPath(), 'templates/')) if templateCheck(x)]
+    logThis('info', 'Getting builtin templates')
+    t = [x for x in getProjectDirs(os.path.join(getScriptPath(), 'templates/')) if templateCheck(x)]
+    logThis('debug', pprint.pformat(t))
+    return t
 
 
 ### Returns all custom templates based on location in config file ###
@@ -158,14 +166,14 @@ def create_project(o):
 
     options['path'] = os.path.join(options['directory'], (str(num).zfill(zeros) + "-" + options['name']))
     logThis('info', 'Making dir: ' + str(options['path']))
-    os.mkdir(options['path'])
+    mkDirDashP(options['path'])
     os.chdir(options['path'])
 
     parseTemplate(options, True, options['name']) # True indicates Top Level Template (not sub template)
 
     os.chdir(c)
 
-    logThis('info', 'Completed creation of : ' + str(options['name']) + '\n     Template used : ' + str(options['template_name']))
+    logThis('info', 'Completed creation of: ' + str(options['name']) + '\n\tTemplate used : ' + str(options['template_name']))
 
 
 ### Returns list of directories within the given directory ###
@@ -221,7 +229,7 @@ def parseTemplate(options, topLevelTemplate, subTemplateName):
         logThis('debug', 'Current Working Directory: ' + str(os.getcwd()))
         if s['type'] == 'folder':
             logThis('debug', 'Type: Folder \n  Location: ' + str(os.path.join(s['path'], s['name'])))
-            os.mkdir(os.path.join(s['path'], s['name']))
+            mkDirDashP(os.path.join(s['path'], s['name']))
         elif s['type'] == 'file':
             logThis('debug', 'Type: ' + str(s['type']) + ', Strategy: ' + str(s['strategy']) + ', Template: ' + str(s['template']))
             if s['strategy'] == 'generate':
@@ -247,6 +255,8 @@ def parseTemplate(options, topLevelTemplate, subTemplateName):
         logThis('info', '...found')
         for e in gen['extensions']:
             logThis('debug', 'Loading ' + str(e['name']) + ' template')
+            if ',' in e['root']:
+                e['root'] = e['root'].replace(',', os.sep)
             logThis('debug', 'Subdirectory: ' + str(e['root']))
             logThis('debug', 'TemplateOptions:\n' + pprint.pformat(options_root))
             o = copy.deepcopy(options_root)
@@ -258,6 +268,8 @@ def parseTemplate(options, topLevelTemplate, subTemplateName):
             ## Order of the above checks should depend on e['src']
             # local means use template in main template
             # system means above order (use template from template dir)
+            ## also consider where to get from if nested nested (more than one level) would have to 
+            # walk down the hierarchy
             o['template_name'] = e['name']
             o['name'] = e['root']
             
@@ -269,13 +281,12 @@ def parseTemplate(options, topLevelTemplate, subTemplateName):
             cd = os.getcwd()
             logThis('debug', 'CWD is: ' + cd)
             logThis('debug', 'Making directory: ' + e['root'])
-            os.mkdir(e['root'])
+            mkDirDashP(e['root'])
             os.chdir(e['root'])
 
             parseTemplate(options, False, o['name'])
 
             os.chdir(cd)
-            # subOptions = loadSubTemplate(e)
     else:
         logThis('info', '...not found')
 
@@ -299,28 +310,6 @@ def loadFileToJson(tp):
     logThis('info', '..loaded')
     # generic.json File loaded and parsed correctly
     return j
-
-
-### Load the options for a subtemplate ###
-def loadSubTemplate(subTemplate):
-    logThis('info', 'Loading subtemplate options')
-    # TODO generate options here with sub template thoughts, such as the changed root, and no project name
-
-    #     cwd = os.getcwd()
-    #
-    #     # TODO fill out this conditional with input from user
-    #     continueWithCollision = true
-    #     try:
-    #         os.mkdir(t['root'])
-    #     except OSError as e:
-    #         pass
-    #
-    #     if continueWithCollision:
-    #         os.chdir(t['root'])
-    #         # TODO finish implementing included templates
-    #
-    #     os.chdir(cwd)
-    return {}
 
 
 ### Special Case file generation for readme ###
@@ -460,7 +449,7 @@ def initGit(d):
     if sys.platform.startswith('linux') or sys.platform.startswith('darwin'): # https://docs.python.org/2/library/sys.html#sys.platform
 
         c = os.getcwd()
-        os.mkdir(d)
+        mkDirDashP(d)
         os.chdir(d)
         logThis('info', 'Initializing git repo at: ' + str(d))
 
@@ -469,6 +458,17 @@ def initGit(d):
         os.chdir(c)
     else:
         logThis('info', 'Git repo not initialized')
+
+### Attempts to make a directory, and if it raises an error, it checks to see if it is a "Folder exists" error, if not it raises it
+### Should mimic the operation of mkdir -p
+### http://stackoverflow.com/questions/273192/in-python-check-if-a-directory-exists-and-create-it-if-necessary
+def mkDirDashP(d):
+    try:
+        os.makedirs(d)
+    except OSError as exception:
+        # logThis('debug', pprint.pformat(exception))
+        if exception.errno != errno.EEXIST:
+            raise
 
 
 ### Respond to call from command line ###
